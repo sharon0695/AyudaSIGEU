@@ -1,4 +1,3 @@
-<p>recuperar-contrasena works!</p>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,7 +22,7 @@
 							<img src="images/img-01.png" alt="IMG">
 						</div>
 
-						<form class="login100-form validate-form" novalidate>
+						<form class="login100-form validate-form" novalidate (submit)="onSubmit($event)">
 							<span class="login100-form-title">
 								Recuperar contraseña
 							</span>
@@ -31,7 +30,7 @@
 							<p style="text-align:center; margin: 0 0 18px 0; color: #666;">Ingrese su correo electrónico para restablecer su contraseña.</p>
 
 							<div class="wrap-input100 validate-input" data-validate = "Es requerido un email valido: ejemplo@uao.edu.co">
-								<input class="input100" type="email" name="correo" placeholder="Correo electrónico" required>
+								<input class="input100" type="email" name="correo" placeholder="Correo electrónico" [(ngModel)]="correo" required>
 								<span class="focus-input100"></span>
 								<span class="symbol-input100">
 									<i class="fa fa-envelope" aria-hidden="true"></i>
@@ -43,6 +42,8 @@
 									Recuperar contraseña
 								</button>
 							</div>
+
+							<div class="text-center p-t-12" *ngIf="mensaje">{{ mensaje }}</div>
 
 							<div class="text-center p-t-12">
 								<a class="txt2" href="../InicioSesion/index.html">

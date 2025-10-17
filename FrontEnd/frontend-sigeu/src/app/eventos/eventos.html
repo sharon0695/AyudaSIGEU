@@ -1,4 +1,3 @@
-<p>eventos works!</p>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -53,8 +52,19 @@
           </tr>
         </thead>
         <tbody id="eventTableBody">
-          <tr>
-            <td colspan="6" class="event-empty">No hay eventos registrados</td>
+          <tr *ngIf="!eventos.length">
+            <td colspan="9" class="event-empty">No hay eventos registrados</td>
+          </tr>
+          <tr *ngFor="let e of eventos">
+            <td>{{ e.codigo }}</td>
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.tipo }}</td>
+            <td>{{ e.fecha }}</td>
+            <td>{{ e.estado }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
         </tbody>
       </table>
@@ -69,50 +79,22 @@
         <span class="close" id="closeModal">&times;</span>
       </div>
 
-      <form id="eventForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Código</label>
-            <input type="text">
-          </div>
-          
-          <div class="form-group">
-            <label>Nombre del evento</label>
-            <input type="text" required>
-          </div>
-
-          <div class="form-group">
-            <label>Fecha</label>
-            <input type="date" required>
-          </div>
-
-          <div class="form-group">
-            <label>Hora inicio</label>
-            <input type="time" required>
-          </div>
-
-          <div class="form-group">
-            <label>Hora fin</label>
-            <input type="time" required>
-          </div>
-
+      <form id="eventForm" (submit)="onSubmitCrearEvento($event)">
+        <input type="text" required [(ngModel)]="nuevoEvento.nombre" name="nombre">
+        <input type="date" required [(ngModel)]="nuevoEvento.fecha" name="fecha">
+        <input type="time" required [(ngModel)]="nuevoEvento.hora_inicio" name="hora_inicio">
+        <input type="time" required [(ngModel)]="nuevoEvento.hora_fin" name="hora_fin">
+        <textarea name="descripcion" rows="4" [(ngModel)]="nuevoEvento.descripcion"></textarea>
+         <select [(ngModel)]="nuevoEvento.tipo" name="tipo">
+          <option value="Academico">Académico</option>
+          <option value="Ludico">Lúdico</option>
+        </select>
           <!-- Espacios -->
           <div class="form-group full-width">
             <label>Espacios</label>
             <div id="spaceContainer"></div>
             <button type="button" class="small-btn" id="addSpaceBtn">+ Añadir espacio</button>
-          </div>
-          <div>
-            <label>Descripción</label>
-            <textarea name="descripcion" rows="4"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Tipo de evento</label>
-            <select>
-              <option value="Academico">Académico</option>
-              <option value="Ludico">Lúdico</option>
-            </select>
-          </div>
+          </div>                
 
           <!-- Organizaciones -->
           <div class="form-group full-width">
@@ -127,9 +109,7 @@
             <div id="respContainer"></div>
             <button type="button" class="small-btn" id="addRespBtn">+ Añadir responsable</button>
           </div>
-        </div>
-
-        <button type="submit" class="save-btn">Guardar</button>
+        
       </form>
     </div>
   </div>

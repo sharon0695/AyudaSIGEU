@@ -33,8 +33,9 @@
       <div class="org-header">
         <h2>Organizaciones</h2>
         <div class="search-container">
-          <input type="text" placeholder="Nombre a buscar" id="searchInput">
-          <button class="add-btn" id="addOrgBtn">+</button>
+          <input type="text" placeholder="Nombre a buscar" id="searchInput" name="nombreBusqueda" [(ngModel)]="nombreBusqueda">
+          <button class="add-btn" type="button" (click)="buscar()">Buscar</button>
+          <button class="add-btn" id="addOrgBtn" type="button">+</button>
         </div>
       </div>
 
@@ -49,8 +50,15 @@
           </tr>
         </thead>
         <tbody id="orgTableBody">
-          <tr>
+          <tr *ngIf="!organizaciones.length">
             <td colspan="5" class="org-empty">No hay organizaciones registradas</td>
+          </tr>
+          <tr *ngFor="let org of organizaciones">
+            <td>{{ org.nit || '-' }}</td>
+            <td>{{ org.nombre || '-' }}</td>
+            <td>{{ org.representante_legal || '-' }}</td>
+            <td>{{ org.ubicacion || '-' }}</td>
+            <td>{{ org.sector_economico || '-' }}</td>
           </tr>
         </tbody>
       </table>
@@ -65,45 +73,22 @@
         <span class="close" id="closeModal">&times;</span>
       </div>
 
-      <form id="orgForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="nit">NIT</label>
-            <input type="text" id="nit" required>
-          </div>
-
-          <div class="form-group">
-            <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" required>
-          </div>
-
-          <div class="form-group">
-            <label for="sector">Sector económico</label>
-            <input type="text" id="sector">
-          </div>
-
-          <div class="form-group">
-            <label for="representante">Representante legal</label>
-            <input type="text" id="representante">
-          </div>
-
-          <div class="form-group">
-            <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono">
-          </div>
-
-          <div class="form-group">
-            <label for="ubicacion">Ubicación</label>
-            <input type="text" id="ubicacion">
-          </div>
-
-          <div class="form-group textarea-group">
-            <label for="actividad">Actividad principal</label>
-            <textarea id="actividad"></textarea>
-          </div>
-        </div>
-
-        <button type="submit" class="save-btn">Guardar</button>
+      <form id="orgForm" (submit)="onSubmitRegistrarOrg($event)">
+       
+        <input type="text" id="nit" required [(ngModel)]="newOrg.nit" name="nit">
+      
+        <input type="text" id="nombre" required [(ngModel)]="newOrg.nombre" name="nombre">
+        
+        <input type="text" id="sector" [(ngModel)]="newOrg.sector_economico" name="sector_economico">
+        
+        <input type="text" id="representante" [(ngModel)]="newOrg.representante_legal" name="representante_legal">
+       
+        <input type="text" id="telefono" [(ngModel)]="newOrg.telefono" name="telefono">
+        
+        <input type="text" id="ubicacion" [(ngModel)]="newOrg.ubicacion" name="ubicacion">
+        
+        <textarea id="actividad" [(ngModel)]="newOrg.actividad_principal" name="actividad_principal"></textarea>
+        
       </form>
     </div>
   </div>

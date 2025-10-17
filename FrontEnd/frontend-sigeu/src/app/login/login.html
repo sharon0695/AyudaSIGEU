@@ -22,13 +22,13 @@
 					<img src="images/img-01.png" alt="IMG">
 				</div>
 
-				<form class="login100-form validate-form">
+				<form class="login100-form validate-form" (submit)="onSubmit($event)">
 					<span class="login100-form-title">
 						Inicio de sesión
 					</span>
 
 					<div class="wrap-input100 validate-input" data-validate = "Es requerido un email valido: ejemplo@uao.edu.co">
-						<input class="input100" type="text" name="correo" placeholder="Correo">
+						<input class="input100" type="text" name="correo" placeholder="Correo" [(ngModel)]="form.correoInstitucional">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							<i class="fa fa-envelope" aria-hidden="true"></i>
@@ -36,7 +36,7 @@
 					</div>
 
 					<div class="wrap-input100 validate-input" data-validate = "Es requerida una constraseña">
-						<input class="input100" type="text" name="contraseña" placeholder="Contraseña">
+						<input class="input100" type="password" name="contrasena" placeholder="Contraseña" [(ngModel)]="form.contrasena">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							<i class="fa fa-lock" aria-hidden="true"></i>
@@ -48,6 +48,8 @@
 							Iniciar sesión
 						</button>
 					</div>
+
+					<div class="text-center p-t-12" *ngIf="mensaje">{{ mensaje }}</div>
 
 					<div class="text-center p-t-12">
 						<span class="txt1">
