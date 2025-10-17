@@ -1,0 +1,206 @@
+<p>eventos works!</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos</title>
+  <link rel="stylesheet" href="eventos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ======= HEADER ======= -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="inicio.html">Inicio</a>
+        <a href="mis-eventos.html" class="active">Eventos</a>
+        <a href="../Organizaciones/organizaciones.html">Organizaciones</a>
+      </div>
+
+      <div class="nav-icons">
+        <span class="material-symbols-outlined icon" id="notificaciones">notifications</span>
+        <a href="../Perfil/perfil.html">
+        <span class="material-symbols-outlined profile-pic" id="perfil">account_circle</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ======= CONTENIDO PRINCIPAL ======= -->
+  <main class="main-container">
+    <section class="event-container">
+      <div class="event-header">
+        <h2>Eventos</h2>
+        <div class="search-container">
+          <input type="text" placeholder="Buscar evento..." id="searchInput">
+          <button class="add-btn" id="addEventBtn">+</button>
+        </div>
+      </div>
+
+      <table class="event-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="eventTableBody">
+          <tr>
+            <td colspan="6" class="event-empty">No hay eventos registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- ======= MODAL DE REGISTRO ======= -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Registrar nuevo evento</h3>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+
+      <form id="eventForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Código</label>
+            <input type="text">
+          </div>
+          
+          <div class="form-group">
+            <label>Nombre del evento</label>
+            <input type="text" required>
+          </div>
+
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" required>
+          </div>
+
+          <div class="form-group">
+            <label>Hora inicio</label>
+            <input type="time" required>
+          </div>
+
+          <div class="form-group">
+            <label>Hora fin</label>
+            <input type="time" required>
+          </div>
+
+          <!-- Espacios -->
+          <div class="form-group full-width">
+            <label>Espacios</label>
+            <div id="spaceContainer"></div>
+            <button type="button" class="small-btn" id="addSpaceBtn">+ Añadir espacio</button>
+          </div>
+          <div>
+            <label>Descripción</label>
+            <textarea name="descripcion" rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tipo de evento</label>
+            <select>
+              <option value="Academico">Académico</option>
+              <option value="Ludico">Lúdico</option>
+            </select>
+          </div>
+
+          <!-- Organizaciones -->
+          <div class="form-group full-width">
+            <label>Organizaciones externas</label>
+            <div id="orgContainer"></div>
+            <button type="button" class="small-btn" id="addOrgBtn">+ Añadir organización</button>
+          </div>
+
+          <!-- Responsables -->
+          <div class="form-group full-width">
+            <label>Responsables</label>
+            <div id="respContainer"></div>
+            <button type="button" class="small-btn" id="addRespBtn">+ Añadir responsable</button>
+          </div>
+        </div>
+
+        <button type="submit" class="save-btn">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======= SCRIPT ======= -->
+  <script>
+    const addEventBtn = document.getElementById("addEventBtn");
+    const eventModal = document.getElementById("eventModal");
+    const closeModal = document.getElementById("closeModal");
+    const addOrgBtn = document.getElementById("addOrgBtn");
+    const addRespBtn = document.getElementById("addRespBtn");
+    const addSpaceBtn = document.getElementById("addSpaceBtn");
+    const orgContainer = document.getElementById("orgContainer");
+    const respContainer = document.getElementById("respContainer");
+    const spaceContainer = document.getElementById("spaceContainer");
+
+    addEventBtn.onclick = () => eventModal.style.display = "flex";
+    closeModal.onclick = () => eventModal.style.display = "none";
+    window.onclick = (e) => { if (e.target === eventModal) eventModal.style.display = "none"; };
+
+    // Añadir espacios
+    addSpaceBtn.onclick = () => {
+      const div = document.createElement("div");
+      div.classList.add("dynamic-group");
+      div.innerHTML = `
+        <input type="text" placeholder="Nombre del espacio (Ej: Auditorio)">
+        <input type="time" title="Hora inicio del espacio">
+        <input type="time" title="Hora fin del espacio">
+        <button type="button" class="remove-btn">x</button>
+      `;
+      spaceContainer.appendChild(div);
+      div.querySelector(".remove-btn").onclick = () => div.remove();
+    };
+
+    // Añadir organización
+    addOrgBtn.onclick = () => {
+      const div = document.createElement("div");
+      div.classList.add("dynamic-group");
+      div.innerHTML = `
+        <input type="text" placeholder="Nombre de organización" required>
+        <select class="org-type">
+          <option value="legal">Representante legal</option>
+          <option value="alterno">Responsable alterno</option>
+        </select>
+        <input type="text" class="alt-name" placeholder="Nombre del alterno" style="display:none;">
+        <input type="file" accept=".pdf" title="Aval en PDF">
+        <button type="button" class="remove-btn">x</button>
+      `;
+      orgContainer.appendChild(div);
+
+      const select = div.querySelector(".org-type");
+      const altField = div.querySelector(".alt-name");
+      select.addEventListener("change", () => {
+        altField.style.display = select.value === "alterno" ? "block" : "none";
+      });
+
+      div.querySelector(".remove-btn").onclick = () => div.remove();
+    };
+
+    // Añadir responsable
+    addRespBtn.onclick = () => {
+      const div = document.createElement("div");
+      div.classList.add("dynamic-group");
+      div.innerHTML = `
+        <input type="text" placeholder="Nombre del responsable" required>
+        <input type="file" accept=".pdf" title="Documento de aval">
+        <button type="button" class="remove-btn">x</button>
+      `;
+      respContainer.appendChild(div);
+      div.querySelector(".remove-btn").onclick = () => div.remove();
+    };
+  </script>
+</body>
+</html>

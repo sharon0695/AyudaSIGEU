@@ -1,0 +1,240 @@
+/* ======= BASE ======= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #f8faff;
+  color: #333;
+}
+
+/* ======= HEADER ======= */
+header {
+  width: 100%;
+  background-color: #f5f7ff;
+  border-bottom: 1px solid #e0e5f5;
+  padding: 15px 40px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.nav-left a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.nav-left a:hover {
+  color: #6c63ff;
+}
+
+.nav-left a.active {
+  background-color: #eec9c9;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon,
+.profile-pic {
+  font-family: "Material Symbols Outlined";
+  font-size: 28px;
+  color: #333;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icon:hover,
+.profile-pic:hover {
+  transform: scale(1.1);
+  color: #6c63ff;
+}
+
+/* ======= PERFIL ======= */
+.main-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
+}
+
+.profile-card {
+  background-color: #f1f1ff;
+  border-radius: 12px;
+  padding: 35px;
+  width: 500px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.profile-header img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  object-fit: cover;
+  background-color: #fff;
+  border: 3px solid #e0e5f5;
+}
+
+.profile-info h3 {
+  margin-top: 10px;
+  font-weight: 600;
+  color: #444;
+}
+
+.profile-info p {
+  margin: 10px 0;
+}
+
+.edit-link {
+  display: inline-block;
+  margin-top: 15px;
+  background-color: #f77f7f;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.edit-link:hover {
+  background-color: #e45a5a;
+}
+
+/* ======= BOTÓN CERRAR SESIÓN ======= */
+.logout-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.logout-btn {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #5a54d1;
+}
+
+/* ======= MODAL ======= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #e3f2f7;
+  padding: 25px;
+  border-radius: 10px;
+  width: 70%;
+  max-width: 600px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.close {
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #444;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* ======= FORMULARIO ======= */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #edf3f7;
+  font-size: 0.9rem;
+}
+
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar-upload img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #fff;
+  border: 2px solid #e0e5f5;
+}
+
+.save-btn {
+  align-self: flex-end;
+  padding: 10px 25px;
+  background-color: #f77f7f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.save-btn:hover {
+  background-color: #e45a5a;
+}

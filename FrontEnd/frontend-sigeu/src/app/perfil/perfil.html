@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+  <link rel="stylesheet" href="perfil.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ======= HEADER ======= -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="inicio.html">Inicio</a>
+        <a href="../Eventos/eventos.html">Eventos</a>
+        <a href="../Organizaciones/organizaciones.html">Organizaciones</a>
+      </div>
+
+      <div class="nav-icons">
+        <span class="material-symbols-outlined icon" id="notificaciones">notifications</span>
+        <span class="material-symbols-outlined profile-pic" id="perfil">account_circle</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ======= PERFIL ======= -->
+  <main class="main-container">
+    <section class="profile-card">
+      <div class="profile-header">
+        <img src="img/perfil.png" alt="Avatar" class="profile-avatar">
+        <h2>PEPITO PEREZ CASTRO</h2>
+      </div>
+      <div></div>
+
+      <div class="profile-info">
+        <h3>Información del perfil</h3>
+        <p><strong>Correo electrónico:</strong> pepito.perez@institucion.edu.co</p>
+        <p><strong>Número de teléfono:</strong> 3000000000</p>
+        <a href="#" id="editProfileBtn" class="edit-link">Editar perfil</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======= BOTÓN DE CERRAR SESIÓN ======= -->
+  <div class="logout-container">
+    <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+  </div>
+
+  <!-- ======= MODAL EDITAR PERFIL ======= -->
+  <div id="editProfileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Editar perfil</h3>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+
+      <form class="edit-form">
+        <div class="form-group">
+          <label for="new-avatar">Foto de perfil</label>
+          <div class="avatar-upload">
+            <img id="preview-avatar" src="img/perfil.png" alt="Vista previa">
+            <input type="file" id="new-avatar" accept="image/*">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="new-phone">Número de teléfono</label>
+          <input type="tel" id="new-phone" placeholder="Ingrese nuevo número">
+        </div>
+
+        <div class="form-group">
+          <label for="current-password">Contraseña actual</label>
+          <input type="password" id="current-password" placeholder="Ingrese su contraseña actual">
+        </div>
+
+        <div class="form-group">
+          <label for="new-password">Nueva contraseña</label>
+          <input type="password" id="new-password" placeholder="Ingrese nueva contraseña">
+        </div>
+
+        <button type="submit" class="save-btn">Guardar cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======= SCRIPT ======= -->
+  <script>
+    const modal = document.getElementById("editProfileModal");
+    const openBtn = document.getElementById("editProfileBtn");
+    const closeBtn = document.getElementById("closeModal");
+
+    openBtn.onclick = (e) => {
+      e.preventDefault();
+      modal.style.display = "flex";
+    };
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+    // Vista previa de imagen
+    const fileInput = document.getElementById('new-avatar');
+    const preview = document.getElementById('preview-avatar');
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) preview.src = URL.createObjectURL(file);
+    });
+
+    // Cerrar sesión
+    document.getElementById("logoutBtn").onclick = () => {
+      if (confirm("¿Seguro que quieres cerrar sesión?")) {
+        window.location.href = "../InicioSesion/index.html"; 
+      }
+    };
+  </script>
+
+</body>
+</html>

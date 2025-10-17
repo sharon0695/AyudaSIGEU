@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizaciones</title>
+  <link rel="stylesheet" href="organizaciones.css">
+  <!-- Fuente de iconos de Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ======= HEADER ======= -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="inicio.html">Inicio</a>
+        <a href="../Eventos/eventos.html">Eventos</a>
+        <a href="organizaciones.html" class="active">Organizaciones</a>
+      </div>
+
+      <div class="nav-icons">
+        <span class="material-symbols-outlined icon" id="notificaciones">notifications</span>
+        <a href="../Perfil/perfil.html">
+        <span class="material-symbols-outlined profile-pic" id="perfil">account_circle</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ======= CONTENIDO PRINCIPAL ======= -->
+  <main class="main-container">
+    <section class="org-container">
+      <div class="org-header">
+        <h2>Organizaciones</h2>
+        <div class="search-container">
+          <input type="text" placeholder="Nombre a buscar" id="searchInput">
+          <button class="add-btn" id="addOrgBtn">+</button>
+        </div>
+      </div>
+
+      <table class="org-table">
+        <thead>
+          <tr>
+            <th>NIT</th>
+            <th>Nombre</th>
+            <th>Representante</th>
+            <th>Ubicación</th>
+            <th>Sector</th>
+          </tr>
+        </thead>
+        <tbody id="orgTableBody">
+          <tr>
+            <td colspan="5" class="org-empty">No hay organizaciones registradas</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- ======= MODAL DE REGISTRO ======= -->
+  <div id="orgModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Registrar nueva organización</h3>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+
+      <form id="orgForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nit">NIT</label>
+            <input type="text" id="nit" required>
+          </div>
+
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" required>
+          </div>
+
+          <div class="form-group">
+            <label for="sector">Sector económico</label>
+            <input type="text" id="sector">
+          </div>
+
+          <div class="form-group">
+            <label for="representante">Representante legal</label>
+            <input type="text" id="representante">
+          </div>
+
+          <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="text" id="telefono">
+          </div>
+
+          <div class="form-group">
+            <label for="ubicacion">Ubicación</label>
+            <input type="text" id="ubicacion">
+          </div>
+
+          <div class="form-group textarea-group">
+            <label for="actividad">Actividad principal</label>
+            <textarea id="actividad"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="save-btn">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======= JAVASCRIPT ======= -->
+  <script>
+    const addOrgBtn = document.getElementById("addOrgBtn");
+    const orgModal = document.getElementById("orgModal");
+    const closeModal = document.getElementById("closeModal");
+
+    addOrgBtn.onclick = () => orgModal.style.display = "flex";
+    closeModal.onclick = () => orgModal.style.display = "none";
+
+    window.onclick = (e) => {
+      if (e.target === orgModal) orgModal.style.display = "none";
+    };
+  </script>
+
+</body>
+</html>
