@@ -45,7 +45,9 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.storageKey);
   }
-
+  logoutRemote() {
+    return this.http.post<void>(`${this.baseUrl}/logout`, {});
+  }
   getToken(): string | null {
     return localStorage.getItem(this.storageKey);
   }

@@ -13,16 +13,23 @@ import { Router, RouterLink } from "@angular/router";
 export class Login {
   form = { correoInstitucional: '', contrasena: '' };
   mensaje = '';
+  esError = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
   onSubmit(event: Event) {
     event.preventDefault();
     this.auth.login(this.form).subscribe({
-      next: () => {this.mensaje = 'Inicio de sesión exitoso';
-        this.router.navigateByUrl('/home');
+      next: () => {
+        this.esError = false;
+        this.mensaje = 'Inicio de sesión exitoso';
+        this.router.navigateByUrl('/eventos');
       },
-      error: () => (this.mensaje = 'Credenciales inválidas'),
+      error: () => {
+        this.esError = true;
+        this.mensaje = 'Credenciales inválidas';
+        this.form = { correoInstitucional: '', contrasena: '' };
+      },
     });
   }
 }

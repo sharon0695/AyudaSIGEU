@@ -55,9 +55,14 @@ export class Organizaciones {
     const body = { ...org, usuario: { identificacion: idUsuario } };
     this.orgs.registrar(body).subscribe({ next: () => this.listar(), error: () => (this.mensaje = 'No fue posible registrar la organización') });
   }
+  showModal = false;
 
   onSubmitRegistrarOrg(event: Event) {
     event.preventDefault();
     this.registrarNueva(this.newOrg);
+    this.showModal = false;
   }
+  openModal() { this.showModal = true; }
+  closeModal() { this.showModal = false; }
+
 }

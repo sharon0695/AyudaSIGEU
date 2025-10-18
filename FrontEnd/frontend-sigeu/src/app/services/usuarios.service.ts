@@ -9,7 +9,7 @@ export interface UsuarioRegistroDto {
   apellido: string;
   correoInstitucional: string;
   contrasena: string;
-  rol: string; // Debe coincidir exactamente con enum backend
+  rol: string; 
   codigo?: number;
   codigoPrograma?: string;
   codigoUnidad?: string;

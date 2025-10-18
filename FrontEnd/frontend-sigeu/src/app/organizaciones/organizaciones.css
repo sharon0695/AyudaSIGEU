@@ -235,7 +235,7 @@ textarea {
   grid-column: span 3;
 }
 
-.save-btn {
+.orgForm-btn {
   margin-top: 20px;
   padding: 10px 25px;
   background-color: #f77f7f;
@@ -247,6 +247,6 @@ textarea {
   font-size: 0.9rem;
 }
 
-.save-btn:hover {
+.orgForm-btn:hover {
   background-color: #e45a5a;
 }

@@ -32,7 +32,7 @@
         <h2>Eventos</h2>
         <div class="search-container">
           <input type="text" placeholder="Buscar evento..." id="searchInput">
-          <button class="add-btn" id="addEventBtn">+</button>
+          <button class="add-btn" id="addEventBtn" (click)="openModal()">+</button>
         </div>
       </div>
 
@@ -71,44 +71,76 @@
   </main>
 
   <!-- ======= MODAL DE REGISTRO ======= -->
-  <div id="eventModal" class="modal">
+  <div id="eventModal" class="modal" [style.display]="showModal ? 'flex' : 'none'">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Registrar nuevo evento</h3>
-        <span class="close" id="closeModal">&times;</span>
+        <span class="close" id="closeModal" (click)="closeModal()">&times;</span>
       </div>
 
       <form id="eventForm" (submit)="onSubmitCrearEvento($event)">
-        <input type="text" required [(ngModel)]="nuevoEvento.nombre" name="nombre">
-        <input type="date" required [(ngModel)]="nuevoEvento.fecha" name="fecha">
-        <input type="time" required [(ngModel)]="nuevoEvento.hora_inicio" name="hora_inicio">
-        <input type="time" required [(ngModel)]="nuevoEvento.hora_fin" name="hora_fin">
-        <textarea name="descripcion" rows="4" [(ngModel)]="nuevoEvento.descripcion"></textarea>
-         <select [(ngModel)]="nuevoEvento.tipo" name="tipo">
-          <option value="Academico">Académico</option>
-          <option value="Ludico">Lúdico</option>
-        </select>
-          <!-- Espacios -->
-          <div class="form-group full-width">
-            <label>Espacios</label>
-            <div id="spaceContainer"></div>
-            <button type="button" class="small-btn" id="addSpaceBtn">+ Añadir espacio</button>
-          </div>                
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Código</label>
+              <input type="text">
+            </div>
+            
+            <div class="form-group">
+              <label>Nombre del evento</label>
+              <input type="text" required [(ngModel)]="nuevoEvento.nombre" name="nombre">
+            </div>
 
-          <!-- Organizaciones -->
-          <div class="form-group full-width">
-            <label>Organizaciones externas</label>
-            <div id="orgContainer"></div>
-            <button type="button" class="small-btn" id="addOrgBtn">+ Añadir organización</button>
-          </div>
+            <div class="form-group">
+              <label>Fecha</label>
+              <input type="date" required [(ngModel)]="nuevoEvento.fecha" name="fecha">
+            </div>
 
-          <!-- Responsables -->
-          <div class="form-group full-width">
-            <label>Responsables</label>
-            <div id="respContainer"></div>
-            <button type="button" class="small-btn" id="addRespBtn">+ Añadir responsable</button>
-          </div>
-        
+            <div class="form-group">
+              <label>Hora inicio</label>
+              <input type="time" required [(ngModel)]="nuevoEvento.hora_inicio" name="hora_inicio">
+            </div>
+
+            <div class="form-group">
+              <label>Hora fin</label>
+              <input type="time" required [(ngModel)]="nuevoEvento.hora_fin" name="hora_fin">
+            </div>
+            
+            <!-- Espacios -->
+            <div class="form-group full-width">
+              <label>Espacios</label>
+              <div id="spaceContainer"></div>
+              <button type="button" class="small-btn" id="addSpaceBtn">+ Añadir espacio</button>
+            </div>
+
+            <div>
+              <label>Descripción</label>
+              <textarea name="descripcion" rows="4" [(ngModel)]="nuevoEvento.descripcion"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Tipo de evento</label>
+              <select [(ngModel)]="nuevoEvento.tipo" name="tipo">
+                <option value="Academico">Académico</option>
+                <option value="Ludico">Lúdico</option>
+              </select>
+            </div>
+                            
+
+            <!-- Organizaciones -->
+            <div class="form-group full-width">
+              <label>Organizaciones externas</label>
+              <div id="orgContainer"></div>
+              <button type="button" class="small-btn" id="addOrgBtn">+ Añadir organización</button>
+            </div>
+
+            <!-- Responsables -->
+            <div class="form-group full-width">
+              <label>Responsables</label>
+              <div id="respContainer"></div>
+              <button type="button" class="small-btn" id="addRespBtn">+ Añadir responsable</button>
+            </div>
+            <button type="submit" class="save-btn">Guardar</button>
+            </div>
       </form>
     </div>
   </div>

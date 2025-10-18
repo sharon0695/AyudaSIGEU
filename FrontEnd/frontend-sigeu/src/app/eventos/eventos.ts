@@ -25,6 +25,7 @@ export class Eventos {
   };
 
   constructor(private events: EventosService) {}
+  showModal = false;
 
   ngOnInit() { this.listar(); }
   listar() { this.events.listar().subscribe({
@@ -39,5 +40,8 @@ export class Eventos {
   onSubmitCrearEvento(event: Event) {
     event.preventDefault();
     this.crear(this.nuevoEvento);
+    this.showModal = false;
   }
+  openModal() { this.showModal = true; }
+  closeModal() { this.showModal = false; }
 }

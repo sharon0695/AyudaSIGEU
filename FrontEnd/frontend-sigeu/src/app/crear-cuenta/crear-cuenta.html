@@ -82,15 +82,20 @@
           <div *ngSwitchCase="'estudiante'">
             <div class="wrap-input100">
               <label class="label-input100" for="codigo">Código</label>
-              <input class="input100" type="text" id="codigo" name="codigo"
-                     placeholder="Código" [(ngModel)]="usuario.codigo" />
+              <input class="input100" type="number" id="codigo" name="codigo"
+                    placeholder="Código (numérico)" [(ngModel)]="usuario.codigo" />
               <span class="focus-input100"></span>
               <span class="symbol-input100"><i class="fa fa-pencil" aria-hidden="true"></i></span>
             </div>
             <div class="wrap-input100">
               <label class="label-input100" for="programa">Programa académico</label>
-              <input class="input100" type="text" id="programa" name="programa"
-                     placeholder="Programa académico" [(ngModel)]="usuario.codigoPrograma" />
+              <div class="input100" style="padding:0;">
+                <select id="programa" name="programa" class="input100"
+                        [(ngModel)]="usuario.codigoPrograma">
+                  <option [ngValue]="''">Seleccione un programa</option>
+                  <option *ngFor="let p of programas" [ngValue]="p.codigo">{{ p.nombre }}</option>
+                </select>
+              </div>
               <span class="focus-input100"></span>
               <span class="symbol-input100"><i class="fa fa-pencil" aria-hidden="true"></i></span>
             </div>
@@ -99,8 +104,13 @@
           <div *ngSwitchCase="'docente'">
             <div class="wrap-input100">
               <label class="label-input100" for="unidad_academica">Unidad Académica</label>
-              <input class="input100" type="text" id="unidad_academica" name="unidad_academica"
-                     placeholder="Unidad Académica" [(ngModel)]="usuario.codigoUnidad" />
+              <div class="input100" style="padding:0;">
+                <select id="unidad_academica" name="unidad_academica" class="input100"
+                        [(ngModel)]="usuario.codigoUnidad">
+                  <option [ngValue]="''">Seleccione una unidad</option>
+                  <option *ngFor="let u of unidades" [ngValue]="u.codigo">{{ u.nombre }}</option>
+                </select>
+              </div>
               <span class="focus-input100"></span>
               <span class="symbol-input100"><i class="fa fa-pencil" aria-hidden="true"></i></span>
             </div>
@@ -109,8 +119,13 @@
           <div *ngSwitchCase="'secretaria'">
             <div class="wrap-input100">
               <label class="label-input100" for="facultad">Facultad</label>
-              <input class="input100" type="text" id="facultad" name="facultad"
-                     placeholder="Facultad" [(ngModel)]="usuario.idFacultad" />
+              <div class="input100" style="padding:0;">
+                <select id="facultad" name="facultad" class="input100"
+                        [(ngModel)]="usuario.idFacultad">
+                  <option [ngValue]="''">Seleccione una facultad</option>
+                  <option *ngFor="let f of facultades" [ngValue]="f.id">{{ f.nombre }}</option>
+                </select>
+              </div>
               <span class="focus-input100"></span>
               <span class="symbol-input100"><i class="fa fa-pencil" aria-hidden="true"></i></span>
             </div>
@@ -126,7 +141,7 @@
           <a class="txt2" routerLink="/login">Inicia sesión</a>
         </div>
 
-        <div *ngIf="mensaje" class="mensaje-registro">
+        <div *ngIf="mensaje" class="mensaje-registro" [ngStyle]="{ color: esError ? '#dc2626' : '#059669' }">
           {{ mensaje }}
         </div>
       </form>

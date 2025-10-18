@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { Api, UsuarioRegistroDto } from '../services/usuarios.service';
-import { Validators, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ProgramasService } from '../services/programas.service';
+import { UnidadService } from '../services/unidad.service';
+import { FacultadService } from '../services/facultad.service';
 
 @Component({
   selector: 'app-crear-cuenta',
@@ -26,8 +29,25 @@ export class CrearCuenta {
   };
 
   mensaje: string = '';
+  esError = false;
 
-  constructor(private apiService: Api) {}
+  programas: Array<{ codigo: string; nombre: string } > = [];
+  unidades: Array<{ codigo: string; nombre: string } > = [];
+  facultades: Array<{ id: string; nombre: string } > = [];
+
+  constructor(
+    private apiService: Api,
+    private programasService: ProgramasService,
+    private unidadService: UnidadService,
+    private facultadService: FacultadService
+  ) {}
+
+  ngOnInit() { this.cargarListas(); }
+  private cargarListas() {
+    this.programasService.listar().subscribe({ next: (data) => { this.programas = (data || []).map((p: any) => ({ codigo: p.codigo, nombre: p.nombre })); } });
+    this.unidadService.listar().subscribe({ next: (data) => { this.unidades = (data || []).map((u: any) => ({ codigo: u.codigo, nombre: u.nombre })); } });
+    this.facultadService.listar().subscribe({ next: (data) => { this.facultades = (data || []).map((f: any) => ({ id: f.id, nombre: f.nombre })); } });
+  }
 
   onRolChange(nuevoRol: string) {
     this.usuario.rol = nuevoRol;
@@ -44,25 +64,25 @@ export class CrearCuenta {
   registrar() {
     // Validaciones en cliente alineadas con backend
     if (!this.usuario.correo.endsWith('@uao.edu.co')) {
-      this.mensaje = 'Debes usar tu correo institucional @uao.edu.co';
+      this.mensaje = 'Debes usar tu correo institucional @uao.edu.co'; this.esError = true;
       return;
     }
     if (this.usuario.contrasena !== this.usuario.confirmar_contrasena) {
-      this.mensaje = 'Las contraseñas no coinciden.';
+      this.mensaje = 'Las contraseñas no coinciden.'; this.esError = true;
       return;
     }
     // Reglas según rol
     const rol = this.mapRol(this.usuario.rol);
     if (rol === 'estudiante' && (!this.usuario.codigo || !this.usuario.codigoPrograma)) {
-      this.mensaje = 'Para estudiante, código e ID de programa son obligatorios';
+      this.mensaje = 'Para estudiante, código e ID de programa son obligatorios'; this.esError = true;
       return;
     }
     if (rol === 'docente' && !this.usuario.codigoUnidad) {
-      this.mensaje = 'Para docente, el ID de unidad académica es obligatorio';
+      this.mensaje = 'Para docente, el ID de unidad académica es obligatorio'; this.esError = true;
       return;
     }
     if (rol === 'secretaria_academica' && !this.usuario.idFacultad) {
-      this.mensaje = 'Para secretaría académica, el ID de facultad es obligatorio';
+      this.mensaje = 'Para secretaría académica, el ID de facultad es obligatorio'; this.esError = true;
       return;
     }
 
@@ -70,25 +90,24 @@ export class CrearCuenta {
 
     const toNum = (v: any) => (v === null || v === undefined || v === '' ? undefined : Number(v));
     const payload: UsuarioRegistroDto = {
-      identificacion: Number(formValues.identificacion),
-      nombre: formValues.nombre,
-      apellido: formValues.apellido,
-      correoInstitucional: formValues.correo,
-      contrasena: formValues.contrasena,
-      rol: this.mapRol(formValues.rol),
-      codigo: toNum(formValues.codigo),
-      codigoPrograma: formValues.codigoPrograma,   
-      codigoUnidad: formValues.codigoUnidad,       
-      idFacultad: formValues.idFacultad,           
-    };
-    console.log(payload);
+    identificacion: Number(formValues.identificacion),
+    nombre: formValues.nombre,
+    apellido: formValues.apellido,
+    correoInstitucional: formValues.correo,
+    contrasena: formValues.contrasena,
+    rol: this.mapRol(formValues.rol),
+    codigo: formValues.codigo ? Number(formValues.codigo) : undefined,
+    codigoPrograma: formValues.codigoPrograma || undefined, // string
+    codigoUnidad: formValues.codigoUnidad || undefined,     // string
+    idFacultad: formValues.idFacultad || undefined,         // string
+  };
     this.apiService.registrarUsuario(payload).subscribe({
       next: () => {
-        this.mensaje = 'Usuario registrado exitosamente';
+        this.mensaje = 'Usuario registrado exitosamente'; this.esError = false;
       },
       error: (err) => {
         const backendMsg = err?.error?.mensaje || err?.error?.message || 'Error al registrar usuario';
-        this.mensaje = backendMsg;
+        this.mensaje = backendMsg; this.esError = true;
       }
     });
   }

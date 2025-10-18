@@ -13,9 +13,9 @@
   <header>
     <nav class="navbar">
       <div class="nav-left">
-        <a href="inicio.html">Inicio</a>
-        <a href="../Eventos/eventos.html">Eventos</a>
-        <a href="../Organizaciones/organizaciones.html">Organizaciones</a>
+        <a routerLink="/home">Inicio</a>
+        <a routerLink="/eventos">Eventos</a>
+        <a routerLink="./organizacionExt">Organizaciones</a>
       </div>
 
       <div class="nav-icons">
@@ -45,7 +45,7 @@
 
   <!-- ======= BOTÓN DE CERRAR SESIÓN ======= -->
   <div class="logout-container">
-    <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+    <button class="logout-btn" id="logoutBtn" (click)="onLogout()">Cerrar sesión</button>
   </div>
 
   <!-- ======= MODAL EDITAR PERFIL ======= -->
@@ -90,6 +90,7 @@
     const modal = document.getElementById("editProfileModal");
     const openBtn = document.getElementById("editProfileBtn");
     const closeBtn = document.getElementById("closeModal");
+    
 
     openBtn.onclick = (e) => {
       e.preventDefault();
@@ -101,10 +102,12 @@
     // Vista previa de imagen
     const fileInput = document.getElementById('new-avatar');
     const preview = document.getElementById('preview-avatar');
-    fileInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (file) preview.src = URL.createObjectURL(file);
-    });
+    if (fileInput && preview) {
+      fileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) preview.src = URL.createObjectURL(file);
+      });
+    }
 
     // Cerrar sesión
     document.getElementById("logoutBtn").onclick = () => {
