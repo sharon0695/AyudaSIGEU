@@ -10,10 +10,8 @@ public class UsuarioRegistroRequest{
     private String correoInstitucional;
     private String contrasena;
     private String rol;
-
-    //opcionales
-    private Integer codigo;
-    private Integer codigoPrograma;
-    private Integer codigoUnidad;
-    private Integer idFacultad;
+    private Integer codigo; 
+    private String codigoPrograma; 
+    private String codigoUnidad;   
+    private String idFacultad; 
 }

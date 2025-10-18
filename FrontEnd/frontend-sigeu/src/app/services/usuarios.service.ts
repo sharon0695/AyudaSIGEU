@@ -11,9 +11,9 @@ export interface UsuarioRegistroDto {
   contrasena: string;
   rol: string; // Debe coincidir exactamente con enum backend
   codigo?: number;
-  codigoPrograma?: number;
-  codigoUnidad?: number;
-  idFacultad?: number;
+  codigoPrograma?: string;
+  codigoUnidad?: string;
+  idFacultad?: string;
 }
 
 @Injectable({

@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { Api, UsuarioRegistroDto } from '../services/usuarios.service';
 import { Validators, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-crear-cuenta',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './crear-cuenta.html',
   styleUrl: './crear-cuenta.css'
 })
@@ -20,9 +20,9 @@ export class CrearCuenta {
     confirmar_contrasena: '',
     rol: '',
     codigo: '',
-    id_Facultad: '',
-    codigo_programa: '',
-    codigo_unidad: '',
+    idFacultad: '',
+    codigoPrograma: '',
+    codigoUnidad: '',
   };
 
   mensaje: string = '';
@@ -32,9 +32,9 @@ export class CrearCuenta {
   onRolChange(nuevoRol: string) {
     this.usuario.rol = nuevoRol;
     this.usuario.codigo = '';
-    this.usuario.codigo_programa = '';
-    this.usuario.codigo_unidad = '';
-    this.usuario.id_Facultad = '';
+    this.usuario.codigoPrograma = '';
+    this.usuario.codigoUnidad = '';
+    this.usuario.idFacultad = '';
   }
 
   getSelectValue(event: Event): string {
@@ -53,35 +53,35 @@ export class CrearCuenta {
     }
     // Reglas según rol
     const rol = this.mapRol(this.usuario.rol);
-    if (rol === 'estudiante' && (!this.usuario.codigo || !this.usuario.codigo_programa)) {
+    if (rol === 'estudiante' && (!this.usuario.codigo || !this.usuario.codigoPrograma)) {
       this.mensaje = 'Para estudiante, código e ID de programa son obligatorios';
       return;
     }
-    if (rol === 'docente' && !this.usuario.codigo_unidad) {
+    if (rol === 'docente' && !this.usuario.codigoUnidad) {
       this.mensaje = 'Para docente, el ID de unidad académica es obligatorio';
       return;
     }
-    if (rol === 'secretaria_academica' && !this.usuario.id_Facultad) {
+    if (rol === 'secretaria_academica' && !this.usuario.idFacultad) {
       this.mensaje = 'Para secretaría académica, el ID de facultad es obligatorio';
       return;
     }
 
     const { confirmar_contrasena, ...formValues } = this.usuario;
 
+    const toNum = (v: any) => (v === null || v === undefined || v === '' ? undefined : Number(v));
     const payload: UsuarioRegistroDto = {
       identificacion: Number(formValues.identificacion),
       nombre: formValues.nombre,
       apellido: formValues.apellido,
       correoInstitucional: formValues.correo,
       contrasena: formValues.contrasena,
-      // Mapear rol UI -> enum backend exacto
       rol: this.mapRol(formValues.rol),
-      codigo: formValues.codigo ? Number(formValues.codigo) : undefined,
-      codigoPrograma: formValues.codigo_programa ? Number(formValues.codigo_programa) : undefined,
-      codigoUnidad: formValues.codigo_unidad ? Number(formValues.codigo_unidad) : undefined,
-      idFacultad: formValues.id_Facultad ? Number(formValues.id_Facultad) : undefined,
+      codigo: toNum(formValues.codigo),
+      codigoPrograma: formValues.codigoPrograma,   
+      codigoUnidad: formValues.codigoUnidad,       
+      idFacultad: formValues.idFacultad,           
     };
-
+    console.log(payload);
     this.apiService.registrarUsuario(payload).subscribe({
       next: () => {
         this.mensaje = 'Usuario registrado exitosamente';

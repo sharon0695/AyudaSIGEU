@@ -63,17 +63,17 @@ public class UsuarioServiceImp implements IUsuarioService {
         //Campos opcionales según el rol
         switch (usuario.getRol()) {
             case estudiante -> {
-                if(request.getCodigo()==null || request.getCodigoPrograma()==null){
+                if(request.getCodigo()==null || request.getCodigoPrograma()==null || request.getCodigoPrograma().isBlank()){
                     throw new RuntimeException("El estudiante debe llenar su código y código del programa");
                 }
             }
             case docente -> {
-                if(request.getCodigoUnidad()==null){
+                if(request.getCodigoUnidad()==null || request.getCodigoUnidad().isBlank()){
                     throw new RuntimeException("El docente debe estar asociado a una unidad académica");
                 }
             }
             case secretaria_academica -> {
-                if(request.getIdFacultad()==null){
+                if(request.getIdFacultad()==null || request.getIdFacultad().isBlank()){
                     throw new RuntimeException("La secretaría debe tener una facultad asociada");
                 }
             }

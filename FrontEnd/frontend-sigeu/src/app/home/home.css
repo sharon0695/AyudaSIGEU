@@ -1,0 +1,60 @@
+header {
+  width: 100%;
+  background-color: #f5f7ff;
+  border-bottom: 1px solid #e0e5f5;
+  padding: 15px 40px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.nav-left a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.nav-left a:hover {
+  color: #6c63ff;
+}
+
+.nav-left a.active {
+  background-color: #eec9c9;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* ===== ICONOS ===== */
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon,
+.profile-pic {
+  font-size: 26px;
+  color: #333;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s;
+}
+
+.icon:hover,
+.profile-pic:hover {
+  transform: scale(1.1);
+  color: #6c63ff;
+}
+p {
+    font-size: larger;
+}
