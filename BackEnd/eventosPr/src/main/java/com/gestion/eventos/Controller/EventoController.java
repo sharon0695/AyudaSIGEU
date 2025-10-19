@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gestion.eventos.DTO.EventoRegistroCompleto;
+import com.gestion.eventos.DTO.EventoRegistroResponse;
 import com.gestion.eventos.Model.EventoModel;
 import com.gestion.eventos.Service.IEventoService;
 
@@ -21,9 +23,13 @@ public class EventoController {
     @Autowired IEventoService eventoService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<EventoModel> registrarEvento(@RequestBody EventoModel evento) {
-        EventoModel eventoRegistrado = eventoService.registrarEvento(evento);
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventoRegistrado);
+    public ResponseEntity<?> registrarEvento(@RequestBody EventoRegistroCompleto request) {
+        EventoModel eventoRegistrado = eventoService.registrarEventoCompleto(request);            
+            EventoRegistroResponse response = new EventoRegistroResponse(
+                "Registro de evento exitoso. El evento se encuentra en estado borrador",
+                eventoRegistrado.getCodigo()
+            );            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @GetMapping ("/listar")
     public ResponseEntity<List<EventoModel>> listarEventos(){
