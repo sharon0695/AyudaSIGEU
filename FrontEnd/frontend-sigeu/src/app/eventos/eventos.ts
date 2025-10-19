@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { EventosService, Evento } from '../services/eventos.service';
 import { EspacioService } from '../services/espacio.service';
 import { OrganizacionesService } from '../services/organizaciones.service';
@@ -10,7 +10,7 @@ import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-eventos',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './eventos.html',
   styleUrl: './eventos.css'
 })
@@ -73,7 +73,12 @@ export class Eventos {
     });
     this.api.getUsuarios().subscribe({
       next: (data) => {
-        this.usuariosListado = (data || []).map((u: any) => ({ identificacion: u.identificacion, nombre: u.nombre, apellido: u.apellido }));
+        this.usuariosListado = (data || [])
+          .filter((u: any) => {
+            const rol = (u.rol || '').toString().toLowerCase();
+            return rol === 'docente' || rol === 'estudiante';
+          })
+          .map((u: any) => ({ identificacion: u.identificacion, nombre: u.nombre, apellido: u.apellido }));
       }
     });
   }
