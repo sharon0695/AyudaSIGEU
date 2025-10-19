@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/home/home.css"],
+  "sourcesContent": [".home-header { margin-bottom: 24px; }\r\n.home-grid {\r\n  display: grid;\r\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\r\n  gap: 16px;\r\n  margin: 12px 0 24px;\r\n}\r\n.home-tile {\r\n  display: block;\r\n  padding: 16px;\r\n  border: 1px solid #e5e7eb;\r\n  border-radius: 12px;\r\n  text-decoration: none;\r\n  color: inherit;\r\n  background: #fff;\r\n  transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;\r\n}\r\n.home-tile:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); border-color: #c7d2fe; }\r\n.tile-icon { font-size: 28px; margin-bottom: 8px; }"],
+  "mappings": ";AAAA,CAAC;AAAc,iBAAe;AAAM;AACpC,CAAC;AACC,WAAS;AACT,yBAAuB,OAAO,QAAQ,EAAE,OAAO,KAAK,EAAE;AACtD,OAAK;AACL,UAAQ,KAAK,EAAE;AACjB;AACA,CAAC;AACC,WAAS;AACT,WAAS;AACT,UAAQ,IAAI,MAAM;AAClB,iBAAe;AACf,mBAAiB;AACjB,SAAO;AACP,cAAY;AACZ;AAAA,IAAY,UAAU,KAAK,IAAI;AAAA,IAAE,WAAW,KAAK,IAAI;AAAA,IAAE,aAAa,KAAK;AAC3E;AACA,CAVC,SAUS;AAAS,aAAW,WAAW;AAAO,cAAY,EAAE,IAAI,KAAK,KAAK,CAAC,EAAC,CAAC,EAAC,CAAC,EAAC;AAAO,gBAAc;AAAS;AAChH,CAAC;AAAY,aAAW;AAAM,iBAAe;AAAK;",
+  "names": []
+}

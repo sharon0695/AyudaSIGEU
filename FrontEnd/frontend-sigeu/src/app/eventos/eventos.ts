@@ -84,12 +84,16 @@ export class Eventos {
   }
 
   crear(evento: Evento) {
-    // Mapear selecciones: backend acepta un solo lugar y una organización
     const payload = {
-      ...evento,
-      codigo_lugar: this.selectedEspacios[0] || this.nuevoEvento.codigo_lugar,
-      nit_organizacion: (this.selectedOrganizaciones[0]?.nit) || this.nuevoEvento.nit_organizacion,
-    } as any;
+      nombre: this.nuevoEvento.nombre,
+      descripcion: this.nuevoEvento.descripcion,
+      tipo: this.nuevoEvento.tipo,
+      fecha: this.nuevoEvento.fecha,
+      horaInicio: this.nuevoEvento.hora_inicio,
+      horaFin: this.nuevoEvento.hora_fin,
+      codigoLugar: this.selectedEspacios[0] || this.nuevoEvento.codigo_lugar,
+      nitOrganizacion: (this.selectedOrganizaciones[0]?.nit) || this.nuevoEvento.nit_organizacion,
+    };
     this.eventosService.registrar(payload).subscribe({
       next: () => this.listar(),
       error: () => (this.mensaje = 'No fue posible registrar el evento'),

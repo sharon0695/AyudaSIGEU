@@ -34,6 +34,7 @@ export class Api {
 
   recuperarContrasena(correo: string): Observable<any> {
     const params = new HttpParams().set('correo', correo);
+    console.log('Llamando al backend')
     return this.http.post(`${this.baseUrl}/recuperar`, null, { params, responseType: 'text' as 'json' });
   }
 }
