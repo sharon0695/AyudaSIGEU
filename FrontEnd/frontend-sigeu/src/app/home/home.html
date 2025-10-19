@@ -1,16 +1,36 @@
-<header>
-    <nav class="navbar">
-      <div class="nav-left">
-        <a routerLink="/home">Inicio</a>
-        <a routerLink="/eventos">Eventos</a>
-        <a routerLink="/organizacionExt">Organizaciones</a>
-      </div>
+<main class="app-shell">
+  <div class="home-card">
+    <header class="home-header">
+      <h1 class="home-title">Bienvenido a SIGEU</h1>
+      <p class="home-subtitle">Plataforma para gestionar eventos universitarios</p>
+    </header>
 
-      <div class="nav-icons">
-        <span class="material-symbols-outlined icon" id="notificaciones">notifications</span>
-        <a routerLink="/perfil">
-        <span class="material-symbols-outlined profile-pic" id="perfil">account_circle</span></a>
-      </div>
-    </nav>
-  </header>
-<p>Bienvenido</p>
+    <section class="home-grid">
+      <a class="home-tile" routerLink="/crearCuenta">
+        <div class="tile-icon">👤</div>
+        <h3>Crear cuenta</h3>
+        <p>Regístrate para organizar o participar en eventos.</p>
+      </a>
+      <a class="home-tile" routerLink="/login">
+        <div class="tile-icon">🔐</div>
+        <h3>Iniciar sesión</h3>
+        <p>Accede para crear, editar y gestionar tus eventos.</p>
+      </a>
+      <a class="home-tile" routerLink="/eventos">
+        <div class="tile-icon">📅</div>
+        <h3>Eventos</h3>
+        <p>Consulta y administra los eventos programados.</p>
+      </a>
+      <a class="home-tile" routerLink="/organizaciones">
+        <div class="tile-icon">🏢</div>
+        <h3>Organizaciones</h3>
+        <p>Gestiona las organizaciones externas vinculadas.</p>
+      </a>
+    </section>
+
+    <footer class="home-actions">
+      <a class="btn btn-primary" routerLink="/crearCuenta">Comenzar ahora</a>
+      <a class="btn btn-secondary" routerLink="/login">Ya tengo cuenta</a>
+    </footer>
+  </div>
+</main>
