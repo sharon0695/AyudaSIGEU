@@ -1,9 +1,10 @@
 package com.gestion.eventos.Repository;
 
+import com.gestion.eventos.Model.ColaboracionModel;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.gestion.eventos.Model.ColaboracionModel;
-
 public interface IColaboracionRepository extends JpaRepository<ColaboracionModel, Integer>{
- //Consultas
+    List<ColaboracionModel> findAllByCodigoEvento_Codigo(Integer codigo);
+    void deleteByCodigoEvento_Codigo(Integer codigo);
 }

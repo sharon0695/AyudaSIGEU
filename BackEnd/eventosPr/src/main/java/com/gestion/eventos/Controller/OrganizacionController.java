@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +51,12 @@ public class OrganizacionController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    @DeleteMapping("/eliminar/{nit}")
+    public ResponseEntity<String> eliminarOrganizacion(
+        @PathVariable String nit,
+        @RequestParam Integer solicitanteId
+    ) {
+        organizacionService.eliminarOrganizacion(nit, solicitanteId);
+        return ResponseEntity.ok("Organización eliminada correctamente");
+    }
 }

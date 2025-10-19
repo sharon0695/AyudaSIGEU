@@ -1,5 +1,6 @@
 package com.gestion.eventos.Model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,5 +32,6 @@ public class EventoModel {
     @Enumerated(EnumType.STRING)
     private estado estado;
     private String codigo_lugar;
-    private String nit_organizacion;
+    @Column(name = "nit_organizacion")
+    private String nitOrganizacion;
 }

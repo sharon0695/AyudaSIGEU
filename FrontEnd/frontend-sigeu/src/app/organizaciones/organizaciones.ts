@@ -42,7 +42,6 @@ export class Organizaciones {
     if (!this.nombreBusqueda) return this.listar();
     this.orgs.buscarPorNombre(this.nombreBusqueda).subscribe({
       next: (res) => {
-        // El backend devuelve String; ajusta si cambia
         this.organizaciones = res ? [{ nombre: res }] : [];
       },
       error: () => (this.mensaje = 'Búsqueda fallida'),
@@ -64,5 +63,30 @@ export class Organizaciones {
   }
   openModal() { this.showModal = true; }
   closeModal() { this.showModal = false; }
+
+  onEliminar(org: any) {
+    if (!org?.nit) { this.mensaje = 'Organización inválida'; return; }
+    const confirmacion = confirm(`¿Eliminar la organización ${org.nombre || org.nit}?`);
+    if (!confirmacion) { this.mensaje = 'Operación cancelada'; return; }
+    const idUsuario = this.auth.getUserId();
+    if (!idUsuario) { this.mensaje = 'Debes iniciar sesión para eliminar organizaciones'; return; }
+    this.orgs.eliminar(org.nit, idUsuario).subscribe({
+      next: () => { this.mensaje = 'Organización eliminada correctamente'; this.listar(); },
+      error: (err) => {
+        const msg = err?.error?.mensaje || err?.error || 'No se pudo eliminar la organización';
+        this.mensaje = msg;
+      }
+    });
+  }
+
+  onVisualizar(org: any) {
+    const detalle = `NIT: ${org.nit}\nNombre: ${org.nombre}\nRepresentante: ${org.representante_legal}\nUbicación: ${org.ubicacion}\nTeléfono: ${org.telefono || '-'}\nSector: ${org.sector_economico || '-'}\nActividad: ${org.actividad_principal || '-'}`;
+    alert(detalle);
+  }
+
+  onEditar(org: any) {
+    this.newOrg = { ...org };
+    this.showModal = true;
+  }
 
 }

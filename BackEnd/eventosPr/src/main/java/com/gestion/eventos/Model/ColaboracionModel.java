@@ -25,7 +25,7 @@ public class ColaboracionModel {
     private OrganizacionModel nit_organizacion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name="codigo_evento")
-    private EventoModel codigo_evento;
+    private EventoModel codigoEvento;
     private String certificado_participacion;
     private String representante_alterno;
 }

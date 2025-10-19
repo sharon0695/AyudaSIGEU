@@ -20,4 +20,8 @@ export class EventosService {
   registrar(evento: Evento): Observable<any> {
     return this.http.post(`${this.baseUrl}/registrar`, evento);
   }
+
+  editar(form: FormData): Observable<any> {
+    return this.http.put(`${this.baseUrl}/editar`, form);
+  }
 }

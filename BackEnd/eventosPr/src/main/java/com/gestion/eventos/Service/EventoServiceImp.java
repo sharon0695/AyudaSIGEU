@@ -15,13 +15,14 @@ import com.gestion.eventos.Repository.IOrganizacionRepository;
 import com.gestion.eventos.Repository.IReservacionRepository;
 import com.gestion.eventos.Repository.IResponsableEventoRepository;
 import com.gestion.eventos.Repository.IUsuarioRepository;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class EventoServiceImp implements IEventoService {
@@ -60,7 +61,7 @@ public class EventoServiceImp implements IEventoService {
             evento.setEstado(EventoModel.estado.borrador);
             
             if (request.getOrganizacion() != null) {
-                evento.setNit_organizacion(request.getOrganizacion().getNit());
+                evento.setNitOrganizacion(request.getOrganizacion().getNit());
             }
             
             evento = eventoRepository.save(evento);
@@ -144,7 +145,7 @@ public class EventoServiceImp implements IEventoService {
         // Crear colaboración entre la organización y el evento
         ColaboracionModel colaboracion = new ColaboracionModel();
         colaboracion.setNit_organizacion(organizacion);
-        colaboracion.setCodigo_evento(evento);
+        colaboracion.setCodigoEvento(evento);
         colaboracion.setCertificado_participacion(orgDTO.getCertificado_participacion());
         colaboracion.setRepresentante_alterno(orgDTO.getRepresentante_alterno());
         
@@ -195,7 +196,7 @@ public class EventoServiceImp implements IEventoService {
             // Crear responsable
             ResponsableEventoModel responsable = new ResponsableEventoModel();
             responsable.setId_usuario(usuario);
-            responsable.setCodigo_evento(evento);
+            responsable.setCodigoEvento(evento);
             responsable.setDocumentoAval(respDTO.getDocumentoAval());
             
             try {
@@ -245,5 +246,94 @@ public class EventoServiceImp implements IEventoService {
 
     public Optional<EventoModel> buscarPorCodigo(Integer codigo) {
         return eventoRepository.findById(codigo);
+    }
+
+    @Override
+    public EventoModel actualizarEvento(Integer codigo, EventoModel cambios) {
+        EventoModel existente = eventoRepository.findById(codigo)
+            .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
+
+        // Solo Borrador o Rechazado
+        if (existente.getEstado() != null) {
+            String st = existente.getEstado().name();
+            if (!"borrador".equalsIgnoreCase(st) && !"rechazado".equalsIgnoreCase(st)) {
+                throw new RuntimeException("Solo se puede editar eventos en estado Borrador o Rechazado");
+            }
+        }
+
+        if (cambios.getNombre() != null) existente.setNombre(cambios.getNombre());
+        if (cambios.getDescripcion() != null) existente.setDescripcion(cambios.getDescripcion());
+        if (cambios.getTipo() != null) existente.setTipo(cambios.getTipo());
+        if (cambios.getFecha() != null) existente.setFecha(cambios.getFecha());
+        if (cambios.getHora_inicio() != null) existente.setHora_inicio(cambios.getHora_inicio());
+        if (cambios.getHora_fin() != null) existente.setHora_fin(cambios.getHora_fin());
+        if (cambios.getCodigo_lugar() != null) existente.setCodigo_lugar(cambios.getCodigo_lugar());
+        if (cambios.getNitOrganizacion() != null) existente.setNitOrganizacion(cambios.getNitOrganizacion());
+
+        return eventoRepository.save(existente);
+    }
+    private String guardarPdf(MultipartFile file, String nombreDestino) {
+        try {
+            Path dir = java.nio.file.Paths.get("src/main/resources/static/uploads/avales/");
+            Files.createDirectories(dir);
+            Path destino = dir.resolve(nombreDestino);
+            Files.copy(file.getInputStream(), destino, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/avales/" + nombreDestino;
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("No se pudo guardar el PDF: " + e.getMessage(), e);
+        }
+    }
+    @Override
+    public void reemplazarOrganizaciones(Integer codigo, java.util.List<String> organizaciones, java.util.List<String> alternos, java.util.List<org.springframework.web.multipart.MultipartFile> avales) {
+        colaboracionRepository.deleteByCodigoEvento_Codigo(codigo);
+        if (organizaciones == null) return;
+        for (int i = 0; i < organizaciones.size(); i++) {
+            String nit = organizaciones.get(i);
+            String alterno = alternos != null && alternos.size() > i ? alternos.get(i) : null;
+            org.springframework.web.multipart.MultipartFile file = (avales != null && avales.size() > i) ? avales.get(i) : null;
+            String url = null;
+            if (file != null && !file.isEmpty()) {
+                if (!"application/pdf".equals(file.getContentType())) {
+                    throw new RuntimeException("El aval debe ser PDF");
+                }
+                String nombre = codigo + "_org_" + nit + ".pdf";
+                url = guardarPdf(file, nombre);
+            }
+
+            com.gestion.eventos.Model.ColaboracionModel c = new com.gestion.eventos.Model.ColaboracionModel();
+            c.setCodigoEvento(eventoRepository.findById(codigo).orElseThrow());
+            com.gestion.eventos.Model.OrganizacionModel org = new com.gestion.eventos.Model.OrganizacionModel(); 
+            org.setNit(nit); 
+            c.setNit_organizacion(org);
+            c.setRepresentante_alterno(alterno);
+            c.setCertificado_participacion(url);
+            colaboracionRepository.save(c);
+        }
+    }
+
+    @Override
+    public void reemplazarResponsables(Integer codigo, java.util.List<Integer> responsables, java.util.List<org.springframework.web.multipart.MultipartFile> avales) {
+        responsableEventoRepository.deleteByCodigoEvento_Codigo(codigo);
+        if (responsables == null) return;
+        for (int i = 0; i < responsables.size(); i++) {
+            Integer id = responsables.get(i);
+            org.springframework.web.multipart.MultipartFile file = (avales != null && avales.size() > i) ? avales.get(i) : null;
+            String url = null;
+            if (file != null && !file.isEmpty()) {
+                if (!"application/pdf".equals(file.getContentType())) {
+                    throw new RuntimeException("El aval del responsable debe ser PDF");
+                }
+                String nombre = codigo + "_resp_" + id + ".pdf";
+                url = guardarPdf(file, nombre);
+            }
+
+            com.gestion.eventos.Model.ResponsableEventoModel r = new com.gestion.eventos.Model.ResponsableEventoModel();
+            r.setCodigoEvento(eventoRepository.findById(codigo).orElseThrow());
+            com.gestion.eventos.Model.UsuarioModel u = new com.gestion.eventos.Model.UsuarioModel(); 
+            u.setIdentificacion(id); 
+            r.setId_usuario(u);
+            r.setDocumentoAval(url);
+            responsableEventoRepository.save(r);
+        }
     }
 }

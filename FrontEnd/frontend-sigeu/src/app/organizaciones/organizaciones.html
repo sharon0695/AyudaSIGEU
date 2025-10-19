@@ -34,7 +34,7 @@
         <div class="search-container">
           <input type="text" placeholder="Nombre a buscar" id="searchInput" name="nombreBusqueda" [(ngModel)]="nombreBusqueda">
           <button class="add-btn" type="button" (click)="buscar()">Buscar</button>
-          <button class="add-btn" id="addOrgBtn" type="button" (click)="openModal()">+</button>
+          <button class="add-btn" id="addOrgBtn" type="button" (click)="openModal()">+</button>          
         </div>
       </div>
 
@@ -46,6 +46,7 @@
             <th>Representante</th>
             <th>Ubicación</th>
             <th>Sector</th>
+            <th colspan="3" style="width:280px">Acciones</th>
           </tr>
         </thead>
         <tbody id="orgTableBody">
@@ -58,6 +59,9 @@
             <td>{{ org.representante_legal || '-' }}</td>
             <td>{{ org.ubicacion || '-' }}</td>
             <td>{{ org.sector_economico || '-' }}</td>
+            <td><button class="small-btnv" (click)="onVisualizar(org)">🔎Visualizar</button></td>
+            <td><button class="small-btned" (click)="onEditar(org)">🖊Editar</button></td>
+            <td><button class="small-btne" (click)="onEliminar(org)">🗑️Eliminar</button></td>
           </tr>
         </tbody>
       </table>
@@ -112,7 +116,7 @@
           <div class="container-orgForm-btn">
 						<button class="orgForm-btn">
 							Guardar
-						</button>
+						</button>            
 					</div>
       </form>
     </div>

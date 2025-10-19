@@ -28,4 +28,9 @@ export class OrganizacionesService {
   obtenerPorNit(nit: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${encodeURIComponent(nit)}`);
   }
+
+  eliminar(nit: string, solicitanteId: number): Observable<any> {
+    const params = new HttpParams().set('solicitanteId', String(solicitanteId));
+    return this.http.delete(`${this.baseUrl}/eliminar/${encodeURIComponent(nit)}`, { params });
+  }
 }

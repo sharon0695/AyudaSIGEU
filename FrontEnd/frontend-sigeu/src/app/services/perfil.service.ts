@@ -1,0 +1,22 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { API_PATHS, buildApiUrl } from '../config/config';
+
+@Injectable({ providedIn: 'root' })
+export class PerfilService {
+  private baseUrl = buildApiUrl(API_PATHS.usuarios);
+  constructor(private http: HttpClient) {}
+
+  actualizarPerfil(
+    identificacion: number,
+    changes: { contrasena?: string; celular?: string; fotoFile?: File }
+  ): Observable<any> {
+    const form = new FormData();
+    form.append('identificacion', String(identificacion));
+    if (changes.contrasena) form.append('contrasena', changes.contrasena);
+    if (changes.celular) form.append('celular', changes.celular);
+    if (changes.fotoFile) form.append('fotoPerfil', changes.fotoFile);
+    return this.http.put(`${this.baseUrl}/editarPerfil`, form);
+  }
+}

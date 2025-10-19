@@ -60,6 +60,7 @@
             <td>{{ e.tipo }}</td>
             <td>{{ e.fecha }}</td>
             <td>{{ e.estado }}</td>
+            <td><button class="small-btn" type="button" (click)="openEdit(e)">🖊Editar</button></td>
             <td></td>
             <td></td>
             <td></td>
@@ -74,7 +75,7 @@
   <div id="eventModal" class="modal" [style.display]="showModal ? 'flex' : 'none'">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Registrar nuevo evento</h3>
+        <h3>{{ editMode ? 'Editar evento' : 'Registrar nuevo evento' }}</h3>
         <span class="close" id="closeModal" (click)="closeModal()">&times;</span>
       </div>
 
@@ -82,7 +83,7 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Código</label>
-              <input type="text">
+              <input class="input100" type="text" [value]="editMode ? editCodigo : 'Se asigna automáticamente'" readonly>
             </div>
             
             <div class="form-group">
@@ -138,11 +139,17 @@
             <div class="form-group full-width">
               <label>Organizaciones externas</label>
               <div id="orgContainer">
-                <div class="dynamic-group" *ngFor="let n of selectedOrganizaciones; let i = index">
-                  <select class="input100" [(ngModel)]="selectedOrganizaciones[i]" name="org_{{i}}">
+                <div class="dynamic-group" *ngFor="let org of selectedOrganizaciones; let i = index">
+                  <select class="input100" [(ngModel)]="selectedOrganizaciones[i].nit" name="org_{{i}}">
                     <option [ngValue]="''">Seleccione una organización</option>
                     <option *ngFor="let o of organizacionesListado" [ngValue]="o.nit">{{ o.nombre || o.nit }}</option>
                   </select>
+                  <select class="input100 org-type" [(ngModel)]="selectedOrganizaciones[i].tipo" name="org_tipo_{{i}}" (change)="onOrgTipoChange(i)">
+                    <option [ngValue]="'legal'">Representante legal</option>
+                    <option [ngValue]="'alterno'">Responsable alterno</option>
+                  </select>
+                  <input *ngIf="selectedOrganizaciones[i].tipo === 'alterno'" class="input100 alt-name" type="text" placeholder="Nombre del alterno" [(ngModel)]="selectedOrganizaciones[i].alterno" name="org_alterno_{{i}}">
+                  <input type="file" accept="application/pdf" title="Aval en PDF" (change)="onOrgAvalChange($event, i)">
                   <button type="button" class="remove-btn" (click)="removeOrganizacion(i)">x</button>
                 </div>
               </div>
@@ -157,16 +164,18 @@
               <label>Responsables</label>
               <div id="respContainer">
                 <div class="dynamic-group" *ngFor="let r of selectedResponsables; let i = index">
-                  <select class="input100" [(ngModel)]="selectedResponsables[i]" name="resp_{{i}}">
+                  <select class="input100" [(ngModel)]="selectedResponsables[i].id" name="resp_{{i}}">
                     <option [ngValue]="0">Seleccione un responsable</option>
                     <option *ngFor="let u of usuariosListado" [ngValue]="u.identificacion">{{ u.nombre }} {{ u.apellido }}</option>
                   </select>
+                  <input type="file" accept="application/pdf" title="Documento de aval" (change)="onRespAvalChange($event, i)">
                   <button type="button" class="remove-btn" (click)="removeResponsable(i)">x</button>
                 </div>
               </div>
               <button type="button" class="small-btn" (click)="addResponsable()">+ Añadir responsable</button>
             </div>
           </div>
+          <button type="submit" class="save-btn">Guardar</button>
       </form>
     </div>
   </div>

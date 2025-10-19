@@ -30,7 +30,7 @@ public class ResponsableEventoModel {
     
     @ManyToOne
     @JoinColumn(name = "codigo_evento")
-    private EventoModel codigo_evento;
+    private EventoModel codigoEvento;
     
     @Column(name = "documentoAval")
     private String documentoAval;

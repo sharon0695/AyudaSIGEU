@@ -23,7 +23,7 @@ export class Login {
       next: () => {
         this.esError = false;
         this.mensaje = 'Inicio de sesión exitoso';
-        this.router.navigateByUrl('/eventos');
+        this.router.navigateByUrl('/home');
       },
       error: () => {
         this.esError = true;

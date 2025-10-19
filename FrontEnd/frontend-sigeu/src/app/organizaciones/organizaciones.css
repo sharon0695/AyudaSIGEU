@@ -161,6 +161,22 @@ header {
   font-size: 0.95rem;
 }
 
+.small-btne {
+  background-color: rgb(31, 49, 49);
+  color:#e3f2f7;
+}
+
+.small-btned{
+  background-color:rgb(6, 151, 161);
+  border-color: cadetblue;
+  color: #e3f2f7;
+}
+
+.small-btnv{
+  background-color: rgb(219, 138, 31);
+  border-color: rgb(219, 138, 31);
+  color: #e3f2f7;
+}
 /* ========== MODAL ========== */
 .modal {
   display: none;

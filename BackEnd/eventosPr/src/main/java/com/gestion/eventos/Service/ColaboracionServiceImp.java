@@ -1,13 +1,11 @@
 package com.gestion.eventos.Service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.gestion.eventos.Model.ColaboracionModel;
 import com.gestion.eventos.Repository.IColaboracionRepository;
 import com.gestion.eventos.Repository.IEventoRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 @Service
 public class ColaboracionServiceImp implements IColaboracionService{
     @Autowired IColaboracionRepository colaboracionRepository;
@@ -15,7 +13,7 @@ public class ColaboracionServiceImp implements IColaboracionService{
     @Autowired IEventoRepository eventoRepository;
 
     public ColaboracionModel crearColaboracion(ColaboracionModel colaboracion) {
-        if (colaboracion.getCodigo_evento() == null) {
+        if (colaboracion.getCodigoEvento() == null) {
             throw new IllegalArgumentException("Debe asociar la colaboración a un evento existente.");
         }
 
@@ -28,7 +26,7 @@ public class ColaboracionServiceImp implements IColaboracionService{
         }
 
         // Verificar si el evento existe
-        eventoRepository.findById(colaboracion.getCodigo_evento().getCodigo())
+        eventoRepository.findById(colaboracion.getCodigoEvento().getCodigo())
             .orElseThrow(() -> new IllegalArgumentException("El evento asociado no existe."));
 
         return colaboracionRepository.save(colaboracion);
