@@ -29,6 +29,7 @@ constructor(private auth: AuthService, private router: Router, private api: Api,
   closeEdit() { this.showEdit = false; }
 
   onLogout() {
+    if (!confirm('¿Seguro que quieres cerrar sesión?')) return;
     this.auth.logoutRemote().subscribe({
       next: () => { this.auth.logout(); this.mensaje = 'Sesión cerrada'; this.router.navigateByUrl('/login'); },
       error: () => { this.auth.logout(); this.router.navigateByUrl('/login'); }

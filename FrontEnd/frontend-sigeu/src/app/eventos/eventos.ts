@@ -84,6 +84,9 @@ export class Eventos {
   }
 
   crear(evento: Evento) {
+    if (!this.nuevoEvento.nombre || !this.nuevoEvento.fecha || !this.nuevoEvento.hora_inicio || !this.nuevoEvento.hora_fin) { this.mensaje = 'Completa nombre, fecha y horas.'; return; }
+    const codigoLugar = this.selectedEspacios[0] || this.nuevoEvento.codigo_lugar;
+    if (!codigoLugar) { this.mensaje = 'Selecciona al menos un espacio.'; return; }
     const payload = {
       nombre: this.nuevoEvento.nombre,
       descripcion: this.nuevoEvento.descripcion,
@@ -91,8 +94,8 @@ export class Eventos {
       fecha: this.nuevoEvento.fecha,
       horaInicio: this.nuevoEvento.hora_inicio,
       horaFin: this.nuevoEvento.hora_fin,
-      codigoLugar: this.selectedEspacios[0] || this.nuevoEvento.codigo_lugar,
-      nitOrganizacion: (this.selectedOrganizaciones[0]?.nit) || this.nuevoEvento.nit_organizacion,
+      codigoLugar,
+      nitOrganizacion: this.selectedOrganizaciones[0]?.nit || this.nuevoEvento.nit_organizacion,
     };
     this.eventosService.registrar(payload).subscribe({
       next: () => this.listar(),
@@ -103,14 +106,17 @@ export class Eventos {
   onSubmitCrearEvento(event: Event) {
     event.preventDefault();
     if (this.editMode && this.editCodigo != null) {
-      const body = {
-        ...this.nuevoEvento,
-        codigoLugar: this.selectedEspacios[0] || this.nuevoEvento.codigo_lugar,
-        nitOrganizacion: this.selectedOrganizaciones[0]?.nit || this.nuevoEvento.nit_organizacion,
-        horaInicio: this.nuevoEvento.hora_inicio,
-        horaFin: this.nuevoEvento.hora_fin,
-      };
-      this.eventosService.editar(body).subscribe({
+    const form = new FormData();
+    form.append('codigo', String(this.editCodigo));
+    form.append('', String(this.nuevoEvento))
+    this.selectedEspacios.forEach(v => { if (v) form.append('espacios', v); });
+    this.selectedResponsables.forEach(r => { if (r.id) form.append('responsables', String(r.id)); if (r.aval) form.append('avalResponsables', r.aval); });
+    this.selectedOrganizaciones.forEach(o => {
+      if (o.nit) form.append('organizaciones', o.nit);
+      form.append('representanteAlternoOrganizacion', o.tipo === 'alterno' ? (o.alterno || '') : '');
+      if (o.aval) form.append('avalOrganizaciones', o.aval);
+    });
+      this.eventosService.editar(form).subscribe({
         next: () => this.listar(),
         error: () => (this.mensaje = 'No fue posible actualizar el evento')
       });
@@ -122,13 +128,15 @@ export class Eventos {
 
   openModal() {
     this.showModal = true;
-    const userId = this.auth.getUserId();
-    if (userId && !this.selectedResponsables.length) {
-      this.selectedResponsables.push({ id: userId, aval: null });
+    if (!this.editMode) {
+      this.selectedEspacios = [];
+      this.selectedOrganizaciones = [];
+      this.selectedResponsables = [];
+      const userId = this.auth.getUserId();
+      if (userId) this.selectedResponsables.push({ id: userId, aval: null });
     }
   }
-
-  closeModal() { this.showModal = false; }
+  closeModal() { this.showModal = false; this.editMode = false; this.editCodigo = null; }
 
   addEspacio() { this.selectedEspacios.push(''); }
   removeEspacio(i: number) { this.selectedEspacios.splice(i, 1); }
@@ -137,6 +145,19 @@ export class Eventos {
   addResponsable() { this.selectedResponsables.push({ id: 0, aval: null }); }
   removeResponsable(i: number) { this.selectedResponsables.splice(i, 1); }
 
+  showOrgInline = false;
+  orgInline: any = { nit: '', nombre: '', representante_legal: '', telefono: '', ubicacion: '', sector_economico: '', actividad_principal: '' };
+  openOrgInlineModal() { this.orgInline = {}; this.showOrgInline = true; }
+  closeOrgInlineModal() { this.showOrgInline = false; }
+  onSubmitOrgInline(event: Event) {
+    event.preventDefault();
+    const idUsuario = this.auth.getUserId(); if (!idUsuario) { this.mensaje = 'Debes iniciar sesión'; return; }
+    const body = { ...this.orgInline, usuario: { identificacion: idUsuario } };
+    this.organizacionesService.registrar(body).subscribe({
+      next: () => { this.selectedOrganizaciones.push({ nit: this.orgInline.nit, tipo: 'legal', alterno: '', aval: null }); this.showOrgInline = false; },
+      error: (err) => { this.mensaje = err?.error?.mensaje || 'No se pudo crear organización'; }
+    });
+  }
   nuevaOrganizacion() {
     this.router.navigate(['/organizaciones'], { queryParams: { nuevo: '1' } });
   }
@@ -144,6 +165,9 @@ export class Eventos {
   openEdit(e: any) {
     this.editMode = true;
     this.editCodigo = e?.codigo ?? null;
+    this.selectedEspacios = [];
+    this.selectedOrganizaciones = [];
+    this.selectedResponsables = [];
     this.nuevoEvento = {
       nombre: e?.nombre || '',
       descripcion: e?.descripcion || '',

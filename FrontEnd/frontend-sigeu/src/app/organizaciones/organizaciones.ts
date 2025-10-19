@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
 })
 export class Organizaciones {
   organizaciones: any[] = [];
+  organizacionesTodas: any[] = [];
   nombreBusqueda = '';
   mensaje = '';
   newOrg: any = {
@@ -26,6 +27,9 @@ export class Organizaciones {
   };
 
   constructor(private orgs: OrganizacionesService, private auth: AuthService) {}
+  showModal = false;
+  showViewModal = false;
+  viewOrg: any;
 
   ngOnInit() {
     this.listar();
@@ -33,19 +37,18 @@ export class Organizaciones {
 
   listar() {
     this.orgs.listar().subscribe({
-      next: (data) => (this.organizaciones = data || []),
+      next: (data) => { this.organizaciones = data || []; this.organizacionesTodas = this.organizaciones.slice(); },
       error: () => (this.mensaje = 'No fue posible cargar organizaciones'),
     });
   }
 
   buscar() {
-    if (!this.nombreBusqueda) return this.listar();
-    this.orgs.buscarPorNombre(this.nombreBusqueda).subscribe({
-      next: (res) => {
-        this.organizaciones = res ? [{ nombre: res }] : [];
-      },
-      error: () => (this.mensaje = 'Búsqueda fallida'),
-    });
+    if (!this.nombreBusqueda) { this.organizaciones = this.organizacionesTodas.slice(); return; }
+    const term = this.nombreBusqueda.trim().toLowerCase();
+    this.organizaciones = this.organizacionesTodas.filter(o => (o?.nombre || '').toLowerCase() === term);
+    if (!this.organizaciones.length) {
+      this.organizaciones = this.organizacionesTodas.filter(o => (o?.nombre || '').toLowerCase().includes(term));
+    }
   }
 
   registrarNueva(org: any) {
@@ -53,13 +56,25 @@ export class Organizaciones {
     if (!idUsuario) { this.mensaje = 'Debes iniciar sesión para registrar organizaciones'; return; }
     const body = { ...org, usuario: { identificacion: idUsuario } };
     this.orgs.registrar(body).subscribe({ next: () => this.listar(), error: () => (this.mensaje = 'No fue posible registrar la organización') });
-  }
-  showModal = false;
+  }  
 
   onSubmitRegistrarOrg(event: Event) {
     event.preventDefault();
-    this.registrarNueva(this.newOrg);
-    this.showModal = false;
+    const idUsuario = this.auth.getUserId();
+    if (!idUsuario) { this.mensaje = 'Debes iniciar sesión'; return; }
+    const existe = this.organizaciones.find(o => o.nit === this.newOrg.nit);
+    if (existe) {
+      this.orgs.editar(this.newOrg.nit, idUsuario, this.newOrg).subscribe({
+        next: () => { this.mensaje = 'Organización actualizada'; this.listar(); this.showModal = false; },
+        error: (err) => { this.mensaje = err?.error?.mensaje || 'No se pudo actualizar'; }
+      });
+    } else {
+      const body = { ...this.newOrg, usuario: { identificacion: idUsuario } };
+      this.orgs.registrar(body).subscribe({
+        next: () => { this.mensaje = 'Organización registrada'; this.listar(); this.showModal = false; },
+        error: (err) => { this.mensaje = err?.error?.mensaje || 'No se pudo registrar'; }
+      });
+    }
   }
   openModal() { this.showModal = true; }
   closeModal() { this.showModal = false; }
@@ -71,22 +86,30 @@ export class Organizaciones {
     const idUsuario = this.auth.getUserId();
     if (!idUsuario) { this.mensaje = 'Debes iniciar sesión para eliminar organizaciones'; return; }
     this.orgs.eliminar(org.nit, idUsuario).subscribe({
-      next: () => { this.mensaje = 'Organización eliminada correctamente'; this.listar(); },
-      error: (err) => {
-        const msg = err?.error?.mensaje || err?.error || 'No se pudo eliminar la organización';
-        this.mensaje = msg;
-      }
+      next: () => { this.listar(); this.mensaje = 'Organización eliminada correctamente';},
+      error: (err) => { const msg = err?.error?.mensaje || err?.error || 'No se pudo eliminar la organización'; this.mensaje = msg; }
     });
   }
 
-  onVisualizar(org: any) {
-    const detalle = `NIT: ${org.nit}\nNombre: ${org.nombre}\nRepresentante: ${org.representante_legal}\nUbicación: ${org.ubicacion}\nTeléfono: ${org.telefono || '-'}\nSector: ${org.sector_economico || '-'}\nActividad: ${org.actividad_principal || '-'}`;
-    alert(detalle);
-  }
+  onVisualizar(org: any) { this.viewOrg = { ...org }; this.showViewModal = true; }
+  closeViewModal() { this.showViewModal = false; this.viewOrg = null; }
 
   onEditar(org: any) {
-    this.newOrg = { ...org };
-    this.showModal = true;
+  const idUsuario = this.auth.getUserId();
+  if (!idUsuario) { this.mensaje = 'Debes iniciar sesión'; return; }
+  if (org?.usuario?.identificacion && org.usuario.identificacion !== idUsuario) {
+    this.mensaje = 'No tienes permisos para editar esta organización';
+    return;
   }
-
+  this.newOrg = {
+    nit: org.nit || '',
+    nombre: org.nombre || '',
+    representante_legal: org.representante_legal || '',
+    ubicacion: org.ubicacion || '',
+    telefono: org.telefono || '',
+    sector_economico: org.sector_economico || '',
+    actividad_principal: org.actividad_principal || ''
+  };
+  this.showModal = true;
+}
 }

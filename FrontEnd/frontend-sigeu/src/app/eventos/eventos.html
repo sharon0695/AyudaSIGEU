@@ -155,7 +155,7 @@
               </div>
               <div style="display:flex; gap:8px;">
                 <button type="button" class="small-btn" (click)="addOrganizacion()">+ Añadir organización</button>
-                <button type="button" class="small-btn" (click)="nuevaOrganizacion()">+ Nueva organización</button>
+                <button type="button" class="small-btn" (click)="openOrgInlineModal()">+ Nueva organización</button>
               </div>
             </div>
 
@@ -176,6 +176,23 @@
             </div>
           </div>
           <button type="submit" class="save-btn">Guardar</button>
+          <div class="modal" [style.display]="showOrgInline ? 'flex' : 'none'">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3>Registrar organización (para este evento)</h3>
+                <span class="close" (click)="closeOrgInlineModal()">&times;</span>
+              </div>
+              <form (submit)="onSubmitOrgInline($event)">
+                <div class="form-grid">
+                  <!-- campos NIT, Nombre, Representante, Teléfono, Ubicación, Sector, Actividad -->
+                </div>
+                <div class="home-actions" style="margin-top:12px; justify-content:flex-end;">
+                  <button class="btn btn-secondary" type="button" (click)="closeOrgInlineModal()">Cancelar</button>
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
       </form>
     </div>
   </div>

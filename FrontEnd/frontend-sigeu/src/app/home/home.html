@@ -1,36 +1,32 @@
-<main class="app-shell">
+<main class="home-container">
   <div class="home-card">
     <header class="home-header">
-      <h1 class="home-title">Bienvenido a SIGEU</h1>
-      <p class="home-subtitle">Plataforma para gestionar eventos universitarios</p>
+      <h1 class="home-title">
+        Bienvenido al <span>Sistema Institucional de Gestión de Eventos Universitarios</span>
+      </h1>
+      <p class="home-subtitle">
+        Administra tus eventos, organizaciones y colaboraciones de forma ágil y centralizada.
+      </p>
     </header>
 
     <section class="home-grid">
-      <a class="home-tile" routerLink="/crearCuenta">
-        <div class="tile-icon">👤</div>
-        <h3>Crear cuenta</h3>
-        <p>Regístrate para organizar o participar en eventos.</p>
-      </a>
-      <a class="home-tile" routerLink="/login">
-        <div class="tile-icon">🔐</div>
-        <h3>Iniciar sesión</h3>
-        <p>Accede para crear, editar y gestionar tus eventos.</p>
-      </a>
       <a class="home-tile" routerLink="/eventos">
         <div class="tile-icon">📅</div>
         <h3>Eventos</h3>
-        <p>Consulta y administra los eventos programados.</p>
+        <p>Consulta, edita y crea nuevos eventos universitarios.</p>
       </a>
-      <a class="home-tile" routerLink="/organizaciones">
+
+      <a class="home-tile" routerLink="/organizacionExt">
         <div class="tile-icon">🏢</div>
         <h3>Organizaciones</h3>
         <p>Gestiona las organizaciones externas vinculadas.</p>
       </a>
-    </section>
 
-    <footer class="home-actions">
-      <a class="btn btn-primary" routerLink="/crearCuenta">Comenzar ahora</a>
-      <a class="btn btn-secondary" routerLink="/login">Ya tengo cuenta</a>
-    </footer>
+      <a class="home-tile" routerLink="/perfil">
+        <div class="tile-icon">👤</div>
+        <h3>Mi perfil</h3>
+        <p>Consulta y actualiza tus datos personales.</p>
+      </a>
+    </section>
   </div>
 </main>

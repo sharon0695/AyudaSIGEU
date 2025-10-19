@@ -67,7 +67,26 @@
       </table>
     </section>
   </main>
-
+  <div class="modal" [style.display]="showViewModal ? 'flex' : 'none'">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detalle de organización</h3>
+        <span class="close" (click)="closeViewModal()">&times;</span>
+      </div>
+      <div class="org-detail">
+        <p><strong>NIT:</strong> {{ viewOrg?.nit || '-' }}</p>
+        <p><strong>Nombre:</strong> {{ viewOrg?.nombre || '-' }}</p>
+        <p><strong>Representante legal:</strong> {{ viewOrg?.representante_legal || '-' }}</p>
+        <p><strong>Teléfono:</strong> {{ viewOrg?.telefono || '-' }}</p>
+        <p><strong>Ubicación:</strong> {{ viewOrg?.ubicacion || '-' }}</p>
+        <p><strong>Sector económico:</strong> {{ viewOrg?.sector_economico || '-' }}</p>
+        <p><strong>Actividad principal:</strong> {{ viewOrg?.actividad_principal || '-' }}</p>
+      </div>
+      <div class="home-actions" style="margin-top:12px; justify-content:flex-end;">
+        <button class="btn btn-secondary" type="button" (click)="closeViewModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
   <!-- ======= MODAL DE REGISTRO ======= -->
   <div id="orgModal" class="modal" [style.display]="showModal ? 'flex' : 'none'">
     <div class="modal-content">
