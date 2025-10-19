@@ -284,13 +284,13 @@ public class EventoServiceImp implements IEventoService {
         }
     }
     @Override
-    public void reemplazarOrganizaciones(Integer codigo, java.util.List<String> organizaciones, java.util.List<String> alternos, java.util.List<org.springframework.web.multipart.MultipartFile> avales) {
+    public void reemplazarOrganizaciones(Integer codigo, List<String> organizaciones, List<String> alternos, List<MultipartFile> avales){
         colaboracionRepository.deleteByCodigoEvento_Codigo(codigo);
         if (organizaciones == null) return;
         for (int i = 0; i < organizaciones.size(); i++) {
             String nit = organizaciones.get(i);
             String alterno = alternos != null && alternos.size() > i ? alternos.get(i) : null;
-            org.springframework.web.multipart.MultipartFile file = (avales != null && avales.size() > i) ? avales.get(i) : null;
+            MultipartFile file = (avales != null && avales.size() > i) ? avales.get(i) : null;
             String url = null;
             if (file != null && !file.isEmpty()) {
                 if (!"application/pdf".equals(file.getContentType())) {
@@ -300,9 +300,9 @@ public class EventoServiceImp implements IEventoService {
                 url = guardarPdf(file, nombre);
             }
 
-            com.gestion.eventos.Model.ColaboracionModel c = new com.gestion.eventos.Model.ColaboracionModel();
+            ColaboracionModel c = new ColaboracionModel();
             c.setCodigoEvento(eventoRepository.findById(codigo).orElseThrow());
-            com.gestion.eventos.Model.OrganizacionModel org = new com.gestion.eventos.Model.OrganizacionModel(); 
+            OrganizacionModel org = new OrganizacionModel(); 
             org.setNit(nit); 
             c.setNit_organizacion(org);
             c.setRepresentante_alterno(alterno);
@@ -312,12 +312,12 @@ public class EventoServiceImp implements IEventoService {
     }
 
     @Override
-    public void reemplazarResponsables(Integer codigo, java.util.List<Integer> responsables, java.util.List<org.springframework.web.multipart.MultipartFile> avales) {
+    public void reemplazarResponsables(Integer codigo, List<Integer> responsables, List<MultipartFile> avales){
         responsableEventoRepository.deleteByCodigoEvento_Codigo(codigo);
         if (responsables == null) return;
         for (int i = 0; i < responsables.size(); i++) {
             Integer id = responsables.get(i);
-            org.springframework.web.multipart.MultipartFile file = (avales != null && avales.size() > i) ? avales.get(i) : null;
+            MultipartFile file = (avales != null && avales.size() > i) ? avales.get(i) : null;
             String url = null;
             if (file != null && !file.isEmpty()) {
                 if (!"application/pdf".equals(file.getContentType())) {
@@ -327,9 +327,9 @@ public class EventoServiceImp implements IEventoService {
                 url = guardarPdf(file, nombre);
             }
 
-            com.gestion.eventos.Model.ResponsableEventoModel r = new com.gestion.eventos.Model.ResponsableEventoModel();
+            ResponsableEventoModel r = new ResponsableEventoModel();
             r.setCodigoEvento(eventoRepository.findById(codigo).orElseThrow());
-            com.gestion.eventos.Model.UsuarioModel u = new com.gestion.eventos.Model.UsuarioModel(); 
+            UsuarioModel u = new UsuarioModel(); 
             u.setIdentificacion(id); 
             r.setId_usuario(u);
             r.setDocumentoAval(url);
