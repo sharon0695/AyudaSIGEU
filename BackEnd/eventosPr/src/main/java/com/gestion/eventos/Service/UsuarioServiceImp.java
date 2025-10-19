@@ -22,7 +22,11 @@ import com.gestion.eventos.DTO.MensajeResponse;
 import com.gestion.eventos.DTO.UsuarioRegistroRequest;
 import com.gestion.eventos.Model.UsuarioModel;
 import com.gestion.eventos.Repository.IUsuarioRepository;
+import com.gestion.eventos.Repository.IProgramaRepository;
+import com.gestion.eventos.Repository.IUnidadAcademicaRepository;
+import com.gestion.eventos.Repository.IFacultadRepository;
 import com.gestion.eventos.Security.JwtUtil;
+import com.gestion.eventos.Security.PasswordPolicy;
 import com.gestion.eventos.Security.TokenBlacklistService;
 
 @Service
@@ -32,26 +36,31 @@ public class UsuarioServiceImp implements IUsuarioService {
     @Autowired JavaMailSender mailSender;
     @Autowired JwtUtil jwtUtil;
     @Autowired TokenBlacklistService tokenBlacklistService;
+    @Autowired IProgramaRepository programaRepository;
+    @Autowired IUnidadAcademicaRepository unidadRepository;
+    @Autowired IFacultadRepository facultadRepository;
    
     @Override
     public MensajeResponse guardarUsuario(UsuarioRegistroRequest request) {
         // Validación de campos obligatorios
          if(request.getIdentificacion()==null || request.getNombre()==null || request.getApellido()==null ||
         request.getCorreoInstitucional()==null || request.getContrasena()==null || request.getRol()==null){
-            throw new RuntimeException("Hay campos obligatorios vacíos");
+            throw new IllegalArgumentException("Hay campos obligatorios vacíos");
         }
         //Validar correo institucional
         if(!request.getCorreoInstitucional().endsWith("@uao.edu.co")){
-            throw new RuntimeException("Solo se permite el uso del correo institucional");
+            throw new IllegalArgumentException("Solo se permite el uso del correo institucional");
         }
         // Validación de usuario único
         if(usuarioRepository.findByIdentificacion(request.getIdentificacion()).isPresent()){
-            throw new RuntimeException("Ya existe un usuario con ese número de identificación");
+            throw new IllegalArgumentException("Ya existe un usuario con ese número de identificación");
         }
         if(usuarioRepository.findByCorreoInstitucional(request.getCorreoInstitucional()).isPresent()){
-            throw new RuntimeException("Ya existe un usuario registrado con ese correo");
+            throw new IllegalArgumentException("Ya existe un usuario registrado con ese correo");
         }
-
+        if(!PasswordPolicy.isValid(request.getContrasena())){
+            throw new IllegalArgumentException(PasswordPolicy.requirementsMessage());
+        }        
         UsuarioModel usuario = new UsuarioModel();
         usuario.setIdentificacion(request.getIdentificacion());
         usuario.setNombre(request.getNombre());
@@ -63,22 +72,34 @@ public class UsuarioServiceImp implements IUsuarioService {
         //Campos opcionales según el rol
         switch (usuario.getRol()) {
             case estudiante -> {
-                if(request.getCodigo()==null || request.getCodigoPrograma()==null || request.getCodigoPrograma().isBlank()){
-                    throw new RuntimeException("El estudiante debe llenar su código y código del programa");
+                if (request.getCodigo() == null || request.getCodigoPrograma() == null || request.getCodigoPrograma().isBlank()) {
+                throw new RuntimeException("El estudiante debe llenar su código y código del programa");
                 }
+                usuario.setCodigo(request.getCodigo());
+                var programa = programaRepository.findById(request.getCodigoPrograma())
+                    .orElseThrow(() -> new RuntimeException("Programa no encontrado"));
+                usuario.setCodigo_programa(programa);
             }
             case docente -> {
-                if(request.getCodigoUnidad()==null || request.getCodigoUnidad().isBlank()){
-                    throw new RuntimeException("El docente debe estar asociado a una unidad académica");
+                if (request.getCodigoUnidad() == null || request.getCodigoUnidad().isBlank()) {
+                throw new RuntimeException("El docente debe estar asociado a una unidad académica");
                 }
+                var unidad = unidadRepository.findById(request.getCodigoUnidad())
+                    .orElseThrow(() -> new RuntimeException("Unidad académica no encontrada"));
+                usuario.setCodigo_unidad(unidad);
             }
             case secretaria_academica -> {
-                if(request.getIdFacultad()==null || request.getIdFacultad().isBlank()){
-                    throw new RuntimeException("La secretaría debe tener una facultad asociada");
+                if (request.getIdFacultad() == null || request.getIdFacultad().isBlank()) {
+                throw new RuntimeException("La secretaría debe tener una facultad asociada");
                 }
+                var facultad = facultadRepository.findById(request.getIdFacultad())
+                    .orElseThrow(() -> new RuntimeException("Facultad no encontrada"));
+                usuario.setId_facultad(facultad);
             }
-            default -> {
-            }
+            default -> { }
+        }
+        if(request.getCodigo() != null && usuarioRepository.findByCodigo(request.getCodigo()).isPresent()){
+            throw new IllegalArgumentException("El código ya se encuentra en uso");
         }
         usuarioRepository.save(usuario);
         return new MensajeResponse("Usuario creado con éxito"); 

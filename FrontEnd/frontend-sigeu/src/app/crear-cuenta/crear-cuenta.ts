@@ -62,7 +62,14 @@ export class CrearCuenta {
   }
 
   registrar() {
-    // Validaciones en cliente alineadas con backend
+    const pwd = this.usuario.contrasena;
+    const strong = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,64}$/.test(pwd) && !/\s/.test(pwd);
+    if (!strong) {
+      this.mensaje = 'La contraseña debe tener 8-64 caracteres, incluir mayúscula, minúscula, número y caracter especial, y no tener espacios';
+      this.esError = true;
+      return;
+    }
+
     if (!this.usuario.correo.endsWith('@uao.edu.co')) {
       this.mensaje = 'Debes usar tu correo institucional @uao.edu.co'; this.esError = true;
       return;

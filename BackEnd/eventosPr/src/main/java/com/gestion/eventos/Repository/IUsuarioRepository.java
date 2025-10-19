@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface IUsuarioRepository extends JpaRepository<UsuarioModel, Integer>{
     Optional<UsuarioModel> findByCorreoInstitucional(String correo_institucional);
     Optional<UsuarioModel> findByIdentificacion(Integer identificacion);
+    Optional<UsuarioModel> findByCodigo(Integer codigo);
 }

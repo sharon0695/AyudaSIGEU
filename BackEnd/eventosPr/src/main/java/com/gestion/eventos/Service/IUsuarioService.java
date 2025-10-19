@@ -21,8 +21,5 @@ public interface IUsuarioService {
     UsuarioModel actualizarPerfil(Integer identificacion, String contrasena, String celular, MultipartFile fotoPerfil) throws IOException;
     ResponseEntity<Resource> obtenerFoto(Integer id) throws IOException;
     void logout(String authHeader);
-    
 }
-
-
     

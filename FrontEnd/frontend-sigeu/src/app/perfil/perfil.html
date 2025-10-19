@@ -30,15 +30,15 @@
     <section class="profile-card">
       <div class="profile-header">
         <img src="img/perfil.png" alt="Avatar" class="profile-avatar">
-        <h2>PEPITO PEREZ CASTRO</h2>
+        <h2>{{ usuario?.nombre }} {{ usuario?.apellido }}</h2>
       </div>
       <div></div>
 
       <div class="profile-info">
         <h3>Información del perfil</h3>
-        <p><strong>Correo electrónico:</strong> pepito.perez@institucion.edu.co</p>
-        <p><strong>Número de teléfono:</strong> 3000000000</p>
-        <a href="#" id="editProfileBtn" class="edit-link">Editar perfil</a>
+        <p><strong>Correo electrónico:</strong> {{ usuario?.correoInstitucional }}</p>
+        <p><strong>Número de teléfono:</strong> {{ usuario?.celular || '—' }}</p>
+        <a href="#" (click)="$event.preventDefault(); openEdit()" class="edit-link">Editar perfil</a>
       </div>
     </section>
   </main>
@@ -49,11 +49,11 @@
   </div>
 
   <!-- ======= MODAL EDITAR PERFIL ======= -->
-  <div id="editProfileModal" class="modal">
+  <div id="editProfileModal" class="modal" [style.display]="showEdit ? 'flex' : 'none'">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Editar perfil</h3>
-        <span class="close" id="closeModal">&times;</span>
+        <span class="close" id="closeModal" (click)="closeEdit()">&times;</span>
       </div>
 
       <form class="edit-form">
@@ -67,12 +67,12 @@
 
         <div class="form-group">
           <label for="new-phone">Número de teléfono</label>
-          <input type="tel" id="new-phone" placeholder="Ingrese nuevo número">
+          <input type="tel" id="new-phone" placeholder="Ingrese nuevo número" [(ngModel)]="edit.celular" name="celular">
         </div>
 
         <div class="form-group">
           <label for="current-password">Contraseña actual</label>
-          <input type="password" id="current-password" placeholder="Ingrese su contraseña actual">
+          <input type="password" id="new-password" placeholder="Ingrese nueva contraseña" [(ngModel)]="edit.contrasena" name="contrasena">
         </div>
 
         <div class="form-group">

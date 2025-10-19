@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { API_PATHS, buildApiUrl } from '../config/config';
 
 export interface Evento {
-  // Completar según modelo del backend si se requiere
   id?: number;
   nombre?: string;
 }

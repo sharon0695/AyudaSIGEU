@@ -108,8 +108,16 @@
             <!-- Espacios -->
             <div class="form-group full-width">
               <label>Espacios</label>
-              <div id="spaceContainer"></div>
-              <button type="button" class="small-btn" id="addSpaceBtn">+ Añadir espacio</button>
+              <div id="spaceContainer">
+                <div class="dynamic-group" *ngFor="let s of selectedEspacios; let i = index">
+                  <select class="input100" [(ngModel)]="selectedEspacios[i]" name="espacio_{{i}}">
+                    <option [ngValue]="''">Seleccione un espacio</option>
+                    <option *ngFor="let e of espaciosListado" [ngValue]="e.codigo">{{ e.nombre || e.codigo }}</option>
+                  </select>
+                  <button type="button" class="remove-btn" (click)="removeEspacio(i)">x</button>
+                </div>
+              </div>
+              <button type="button" class="small-btn" (click)="addEspacio()">+ Añadir espacio</button>
             </div>
 
             <div>
@@ -129,18 +137,36 @@
             <!-- Organizaciones -->
             <div class="form-group full-width">
               <label>Organizaciones externas</label>
-              <div id="orgContainer"></div>
-              <button type="button" class="small-btn" id="addOrgBtn">+ Añadir organización</button>
+              <div id="orgContainer">
+                <div class="dynamic-group" *ngFor="let n of selectedOrganizaciones; let i = index">
+                  <select class="input100" [(ngModel)]="selectedOrganizaciones[i]" name="org_{{i}}">
+                    <option [ngValue]="''">Seleccione una organización</option>
+                    <option *ngFor="let o of organizacionesListado" [ngValue]="o.nit">{{ o.nombre || o.nit }}</option>
+                  </select>
+                  <button type="button" class="remove-btn" (click)="removeOrganizacion(i)">x</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="small-btn" (click)="addOrganizacion()">+ Añadir organización</button>
+                <button type="button" class="small-btn" (click)="nuevaOrganizacion()">+ Nueva organización</button>
+              </div>
             </div>
 
             <!-- Responsables -->
             <div class="form-group full-width">
               <label>Responsables</label>
-              <div id="respContainer"></div>
-              <button type="button" class="small-btn" id="addRespBtn">+ Añadir responsable</button>
+              <div id="respContainer">
+                <div class="dynamic-group" *ngFor="let r of selectedResponsables; let i = index">
+                  <select class="input100" [(ngModel)]="selectedResponsables[i]" name="resp_{{i}}">
+                    <option [ngValue]="0">Seleccione un responsable</option>
+                    <option *ngFor="let u of usuariosListado" [ngValue]="u.identificacion">{{ u.nombre }} {{ u.apellido }}</option>
+                  </select>
+                  <button type="button" class="remove-btn" (click)="removeResponsable(i)">x</button>
+                </div>
+              </div>
+              <button type="button" class="small-btn" (click)="addResponsable()">+ Añadir responsable</button>
             </div>
-            <button type="submit" class="save-btn">Guardar</button>
-            </div>
+          </div>
       </form>
     </div>
   </div>
