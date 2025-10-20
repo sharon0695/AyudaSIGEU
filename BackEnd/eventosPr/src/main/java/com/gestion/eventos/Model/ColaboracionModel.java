@@ -22,7 +22,7 @@ public class ColaboracionModel {
     private Integer id;
     @ManyToOne
     @JoinColumn (name="nit_organizacion")
-    private OrganizacionModel nit_organizacion;
+    private OrganizacionModel nitOrganizacion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name="codigo_evento")
     private EventoModel codigoEvento;

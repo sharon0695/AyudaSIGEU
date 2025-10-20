@@ -183,11 +183,12 @@ export class Eventos {
         next: (det) => {
           this.selectedOrganizaciones = (det.organizaciones || []).map(o => ({ nit: o.nit, tipo: o.representanteAlterno ? 'alterno' : 'legal', alterno: o.representanteAlterno || '', aval: null }));
           this.selectedResponsables = (det.responsables || []).map(r => ({ id: r.idUsuario, aval: null }));
+          this.selectedEspacios = (det.reservaciones || []).map((rv: any) => rv.codigoEspacio).filter(Boolean);
           this.openModal();
         },
         error: () => { this.openModal(); }
-        });
-      } else {
+      });
+    } else {
       this.openModal();
     }
   }

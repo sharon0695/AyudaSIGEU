@@ -22,7 +22,7 @@ public class ReservacionModel {
     private Integer id;
     @ManyToOne
     @JoinColumn (name="codigo_evento")
-    private EventoModel codigo_evento;
+    private EventoModel codigoEvento;
     @ManyToOne
     @JoinColumn (name="codigo_espacio")
     private EspacioModel codigo_espacio;

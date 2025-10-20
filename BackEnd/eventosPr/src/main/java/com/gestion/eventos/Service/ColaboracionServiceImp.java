@@ -17,7 +17,7 @@ public class ColaboracionServiceImp implements IColaboracionService{
             throw new IllegalArgumentException("Debe asociar la colaboración a un evento existente.");
         }
 
-        if (colaboracion.getNit_organizacion() == null) {
+        if (colaboracion.getNitOrganizacion() == null) {
             throw new IllegalArgumentException("Debe indicar el Nit de la organización.");
         }
 

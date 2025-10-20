@@ -1,6 +1,7 @@
 package com.gestion.eventos.Service;
 
 import com.gestion.eventos.Model.OrganizacionModel;
+import com.gestion.eventos.Repository.IColaboracionRepository;
 import com.gestion.eventos.Repository.IEventoRepository;
 import com.gestion.eventos.Repository.IOrganizacionRepository;
 import java.util.List;
@@ -15,6 +16,7 @@ public class OrganizacionServiceImpl implements IOrganizacionService {
 
     @Autowired IOrganizacionRepository organizacionRepository;
     @Autowired IEventoRepository eventoRepository;
+    @Autowired IColaboracionRepository colaboracionRepository;
 
     @Override
     public OrganizacionModel guardarOrganizacion(OrganizacionModel organizacion) {
@@ -104,15 +106,16 @@ public class OrganizacionServiceImpl implements IOrganizacionService {
 
     @Override
     public void eliminarOrganizacion(String nit, Integer solicitanteId) {
-    OrganizacionModel org = organizacionRepository.findByNit(nit)
-        .orElseThrow(() -> new NoSuchElementException("Organización no encontrada"));
-    if (org.getUsuario() == null || !org.getUsuario().getIdentificacion().equals(solicitanteId)) {
-        throw new RuntimeException("No tiene permisos para eliminar esta organización");
+        OrganizacionModel org = organizacionRepository.findByNit(nit)
+            .orElseThrow(() -> new NoSuchElementException("Organización no encontrada"));
+        if (org.getUsuario() == null || !org.getUsuario().getIdentificacion().equals(solicitanteId)) {
+            throw new RuntimeException("No tiene permisos para eliminar esta organización");
+        }
+        long asociados = colaboracionRepository.countByNitOrganizacion_Nit(nit);
+
+        if (asociados > 0) {
+            throw new DataIntegrityViolationException("La organización no puede eliminarse porque está asociada a eventos");
+        }
+        organizacionRepository.delete(org);
     }
-    long asociados = eventoRepository.countByNitOrganizacion(nit);
-    if (asociados > 0) {
-        throw new DataIntegrityViolationException("La organización no puede eliminarse porque está asociada a eventos");
-    }
-    organizacionRepository.delete(org);
-}
 }

@@ -13,9 +13,8 @@ public class EventoRegistroCompleto {
     private Date fecha;
     private Time hora_inicio;
     private Time hora_fin;
-    private String codigo_lugar;
     private Integer id_usuario_registra; 
-    private OrganizacionDTO organizacion;    
+    private List<OrganizacionDTO> organizaciones;
     private List<ResponsableDTO> responsables;    
     private List<ReservacionDTO> reservaciones;
     

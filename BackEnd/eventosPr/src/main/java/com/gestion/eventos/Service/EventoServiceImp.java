@@ -2,6 +2,7 @@ package com.gestion.eventos.Service;
 
 import com.gestion.eventos.DTO.EventoOrganizacionResponse;
 import com.gestion.eventos.DTO.EventoRegistroCompleto;
+import com.gestion.eventos.DTO.EventoReservacionResponse;
 import com.gestion.eventos.DTO.EventoResponsableResponse;
 import com.gestion.eventos.Model.ColaboracionModel;
 import com.gestion.eventos.Model.EspacioModel;
@@ -42,54 +43,46 @@ public class EventoServiceImp implements IEventoService {
     @Override
     @Transactional
     public EventoModel registrarEventoCompleto(EventoRegistroCompleto request) {
-        try {
-            //Validar campos obligatorios del evento
-            validarCamposEvento(request);
-            
-            if (request.getId_usuario_registra() == null) {
-                throw new IllegalArgumentException("El ID del usuario que registra el evento es obligatorio");
-            }
-            
-            usuarioRepository.findById(request.getId_usuario_registra())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario registrador no encontrado"));
-            
-            //Crear y guardar el evento principal
-            EventoModel evento = new EventoModel();
-            evento.setNombre(request.getNombre());
-            evento.setDescripcion(request.getDescripcion());
-            evento.setTipo(request.getTipo());
-            evento.setFecha(request.getFecha());
-            evento.setHora_inicio(request.getHora_inicio());
-            evento.setHora_fin(request.getHora_fin());
-            evento.setCodigo_lugar(request.getCodigo_lugar());
-            evento.setEstado(EventoModel.estado.borrador);
-            
-            if (request.getOrganizacion() != null) {
-                evento.setNitOrganizacion(request.getOrganizacion().getNit());
-            }
-            
-            evento = eventoRepository.save(evento);
-            
-            //Procesar organización externa si existe
-            if (request.getOrganizacion() != null) {
-                procesarOrganizacion(request.getOrganizacion(), evento, request.getId_usuario_registra());
-            }
-            
-            //Procesar responsables del evento
-            if (request.getResponsables() != null && !request.getResponsables().isEmpty()) {
-                procesarResponsables(request.getResponsables(), evento);
-            }
-            
-            //Procesar reservaciones de espacios
-            if (request.getReservaciones() != null && !request.getReservaciones().isEmpty()) {
-                procesarReservaciones(request.getReservaciones(), evento);
-            }
-            
-            return evento;
-            
-        } catch (Exception e) {
-            throw new RuntimeException("Error al registrar el evento: " + e.getMessage(), e);
+        // 1. Validar campos obligatorios del evento
+        validarCamposEvento(request);
+        
+        // 2. Validar que el usuario registrador existe
+        if (request.getId_usuario_registra() == null) {
+            throw new IllegalArgumentException("El ID del usuario que registra el evento es obligatorio");
         }
+        
+        // Verificar que el usuario existe
+        usuarioRepository.findById(request.getId_usuario_registra())
+            .orElseThrow(() -> new IllegalArgumentException("Usuario registrador no encontrado"));
+        
+        // 3. Crear y guardar el evento principal
+        EventoModel evento = new EventoModel();
+        evento.setNombre(request.getNombre());
+        evento.setDescripcion(request.getDescripcion());
+        evento.setTipo(request.getTipo());
+        evento.setFecha(request.getFecha());
+        evento.setHora_inicio(request.getHora_inicio());
+        evento.setHora_fin(request.getHora_fin());
+        evento.setEstado(EventoModel.estado.borrador);
+        
+        evento = eventoRepository.save(evento);
+        
+        // 4. Procesar organizaciones externas si existen
+        if (request.getOrganizaciones() != null && !request.getOrganizaciones().isEmpty()) {
+            procesarOrganizaciones(request.getOrganizaciones(), evento, request.getId_usuario_registra());
+        }
+        
+        // 5. Procesar responsables del evento
+        if (request.getResponsables() != null && !request.getResponsables().isEmpty()) {
+            procesarResponsables(request.getResponsables(), evento);
+        }
+        
+        // 6. Procesar reservaciones de espacios
+        if (request.getReservaciones() != null && !request.getReservaciones().isEmpty()) {
+            procesarReservaciones(request.getReservaciones(), evento);
+        }
+        
+        return evento;
     }
 
     private void validarCamposEvento(EventoRegistroCompleto request) {
@@ -111,49 +104,65 @@ public class EventoServiceImp implements IEventoService {
         if (request.getHora_fin() == null) {
             throw new IllegalArgumentException("La hora de fin del evento es obligatoria");
         }
-        if (request.getCodigo_lugar() == null || request.getCodigo_lugar().trim().isEmpty()) {
-            throw new IllegalArgumentException("El código del lugar es obligatorio");
+        
+        // Validar que la fecha no sea anterior a la actual 
+        java.time.LocalDate fechaActual = java.time.LocalDate.now();
+        java.time.LocalDate fechaEvento = request.getFecha().toLocalDate();
+        
+        if (fechaEvento.isBefore(fechaActual)) {
+            throw new IllegalArgumentException("La fecha ingresada no puede ser menor a la actual");
+        }
+        
+        // Validar que la hora de fin no sea anterior a la hora de inicio
+        if (request.getHora_fin().before(request.getHora_inicio())) {
+            throw new IllegalArgumentException("La hora de fin no puede ser anterior a la hora de inicio");
         }
     }
 
-    private void procesarOrganizacion(EventoRegistroCompleto.OrganizacionDTO orgDTO, EventoModel evento, Integer idUsuarioRegistra) {
-        // Verificar si la organización ya existe
-        Optional<OrganizacionModel> orgExistente = organizacionRepository.findByNit(orgDTO.getNit());
+    private void procesarOrganizaciones(List<EventoRegistroCompleto.OrganizacionDTO> organizacionesDTO, EventoModel evento, Integer idUsuarioRegistra) {
+        for (EventoRegistroCompleto.OrganizacionDTO orgDTO : organizacionesDTO) {
         
-        OrganizacionModel organizacion;
-        
-        if (orgExistente.isPresent()) {
-            // Usar organización existente
-            organizacion = orgExistente.get();
-        } else {
-            // Crear nueva organización
-            validarDatosOrganizacion(orgDTO);
+            Optional<OrganizacionModel> orgExistente = organizacionRepository.findByNit(orgDTO.getNit());
             
-            organizacion = new OrganizacionModel();
-            organizacion.setNit(orgDTO.getNit());
-            organizacion.setNombre(orgDTO.getNombre());
-            organizacion.setRepresentante_legal(orgDTO.getRepresentante_legal());
-            organizacion.setUbicacion(orgDTO.getUbicacion());
-            organizacion.setTelefono(orgDTO.getTelefono());
-            organizacion.setSector_economico(orgDTO.getSector_economico());
-            organizacion.setActividad_principal(orgDTO.getActividad_principal());
+            OrganizacionModel organizacion;
             
-            // Asociar usuario que registra (debe existir en la BD)
-            UsuarioModel usuario = usuarioRepository.findById(idUsuarioRegistra)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario registrador no encontrado"));
-            organizacion.setUsuario(usuario);
+            if (orgExistente.isPresent()) {
+                organizacion = orgExistente.get();
+            } else {
+                validarDatosOrganizacion(orgDTO);
+                
+                organizacion = new OrganizacionModel();
+                organizacion.setNit(orgDTO.getNit());
+                organizacion.setNombre(orgDTO.getNombre());
+                organizacion.setRepresentante_legal(orgDTO.getRepresentante_legal());
+                organizacion.setUbicacion(orgDTO.getUbicacion());
+                organizacion.setTelefono(orgDTO.getTelefono());
+                organizacion.setSector_economico(orgDTO.getSector_economico());
+                organizacion.setActividad_principal(orgDTO.getActividad_principal());
+                
+                // Asociar usuario que registra (debe existir en la BD)
+                UsuarioModel usuario = usuarioRepository.findById(idUsuarioRegistra)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario registrador no encontrado"));
+                organizacion.setUsuario(usuario);
+                
+                organizacion = organizacionRepository.save(organizacion);
+            }
             
-            organizacion = organizacionRepository.save(organizacion);
+            // Validar que el certificado sea PDF
+            if (orgDTO.getCertificado_participacion() != null && 
+                !orgDTO.getCertificado_participacion().toLowerCase().endsWith(".pdf")) {
+                throw new IllegalArgumentException("El certificado de participación debe ser un archivo PDF");
+            }
+            
+            // Crear colaboración entre la organización y el evento
+            ColaboracionModel colaboracion = new ColaboracionModel();
+            colaboracion.setNitOrganizacion(organizacion);
+            colaboracion.setCodigoEvento(evento);
+            colaboracion.setCertificado_participacion(orgDTO.getCertificado_participacion());
+            colaboracion.setRepresentante_alterno(orgDTO.getRepresentante_alterno());
+            
+            colaboracionRepository.save(colaboracion);
         }
-        
-        // Crear colaboración entre la organización y el evento
-        ColaboracionModel colaboracion = new ColaboracionModel();
-        colaboracion.setNit_organizacion(organizacion);
-        colaboracion.setCodigoEvento(evento);
-        colaboracion.setCertificado_participacion(orgDTO.getCertificado_participacion());
-        colaboracion.setRepresentante_alterno(orgDTO.getRepresentante_alterno());
-        
-        colaboracionRepository.save(colaboracion);
     }
 
     private void validarDatosOrganizacion(EventoRegistroCompleto.OrganizacionDTO orgDTO) {
@@ -189,6 +198,12 @@ public class EventoServiceImp implements IEventoService {
             if (respDTO.getDocumentoAval() == null || respDTO.getDocumentoAval().trim().isEmpty()) {
                 throw new IllegalArgumentException("El documento de aval es obligatorio");
             }
+            
+            // Validar que el documento sea PDF
+            if (!respDTO.getDocumentoAval().toLowerCase().endsWith(".pdf")) {
+                throw new IllegalArgumentException("El documento de aval debe ser un archivo PDF");
+            }
+            
             if (respDTO.getTipoAval() == null || respDTO.getTipoAval().trim().isEmpty()) {
                 throw new IllegalArgumentException("El tipo de aval es obligatorio");
             }
@@ -234,7 +249,7 @@ public class EventoServiceImp implements IEventoService {
             
             // Crear reservación
             ReservacionModel reservacion = new ReservacionModel();
-            reservacion.setCodigo_evento(evento);
+            reservacion.setCodigoEvento(evento);
             reservacion.setCodigo_espacio(espacio);
             reservacion.setHora_inicio(resDTO.getHora_inicio());
             reservacion.setHora_fin(resDTO.getHora_fin());
@@ -270,10 +285,7 @@ public class EventoServiceImp implements IEventoService {
         if (cambios.getTipo() != null) existente.setTipo(cambios.getTipo());
         if (cambios.getFecha() != null) existente.setFecha(cambios.getFecha());
         if (cambios.getHora_inicio() != null) existente.setHora_inicio(cambios.getHora_inicio());
-        if (cambios.getHora_fin() != null) existente.setHora_fin(cambios.getHora_fin());
-        if (cambios.getCodigo_lugar() != null) existente.setCodigo_lugar(cambios.getCodigo_lugar());
-        if (cambios.getNitOrganizacion() != null) existente.setNitOrganizacion(cambios.getNitOrganizacion());
-
+        if (cambios.getHora_fin() != null) existente.setHora_fin(cambios.getHora_fin());     
         return eventoRepository.save(existente);
     }
     private String guardarPdf(MultipartFile file, String nombreDestino) {
@@ -308,7 +320,7 @@ public class EventoServiceImp implements IEventoService {
             c.setCodigoEvento(eventoRepository.findById(codigo).orElseThrow());
             OrganizacionModel org = new OrganizacionModel(); 
             org.setNit(nit); 
-            c.setNit_organizacion(org);
+            c.setNitOrganizacion(org);
             c.setRepresentante_alterno(alterno);
             c.setCertificado_participacion(url);
             colaboracionRepository.save(c);
@@ -346,7 +358,7 @@ public class EventoServiceImp implements IEventoService {
     var out = new ArrayList<EventoOrganizacionResponse>();
     for (var c : list) {
         out.add(new EventoOrganizacionResponse(
-        c.getNit_organizacion() != null ? c.getNit_organizacion().getNit() : null,
+        c.getNitOrganizacion() != null ? c.getNitOrganizacion().getNit() : null,
         c.getRepresentante_alterno(),
         c.getCertificado_participacion()
         ));
@@ -362,6 +374,35 @@ public class EventoServiceImp implements IEventoService {
         out.add(new EventoResponsableResponse(
         r.getId_usuario() != null ? r.getId_usuario().getIdentificacion() : null,
         r.getDocumentoAval()
+        ));
+    }
+    return out;
+    }
+    @Override
+    public List<EventoReservacionResponse> obtenerReservacionesEvento(Integer codigo) {
+    var list = reservacionRepository.findAllByCodigoEvento_Codigo(codigo);
+    var out = new ArrayList<EventoReservacionResponse>();
+    for (var r : list) {
+        String codEspacio = null;
+        try {
+        var campo = r.getClass().getDeclaredField("codigo_espacio");
+        campo.setAccessible(true);
+        Object val = campo.get(r);
+        if (val != null) {
+            if (val instanceof String) codEspacio = (String) val;
+            else {
+            try {
+                var m = val.getClass().getMethod("getCodigo");
+                Object cod = m.invoke(val);
+                codEspacio = cod != null ? cod.toString() : null;
+            } catch (Exception ignore) { codEspacio = val.toString(); }
+            }
+        }
+        } catch (Exception ignore) {}
+        out.add(new EventoReservacionResponse(
+        codEspacio,
+        r.getHora_inicio() != null ? r.getHora_inicio().toString() : null,
+        r.getHora_fin() != null ? r.getHora_fin().toString() : null
         ));
     }
     return out;

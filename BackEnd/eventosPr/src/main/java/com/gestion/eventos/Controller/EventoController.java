@@ -71,9 +71,6 @@ public class EventoController {
         if (fecha != null && !fecha.isBlank()) cambios.setFecha(Date.valueOf(LocalDate.parse(fecha)));
         if (horaInicio != null && !horaInicio.isBlank()) cambios.setHora_inicio(Time.valueOf(LocalTime.parse(horaInicio)));
         if (horaFin != null && !horaFin.isBlank()) cambios.setHora_fin(Time.valueOf(LocalTime.parse(horaFin)));
-        cambios.setCodigo_lugar(codigoLugar);
-        cambios.setNitOrganizacion(nitOrganizacion);
-
         eventoService.actualizarEvento(codigo, cambios);
         eventoService.reemplazarOrganizaciones(codigo, organizaciones, representanteAlternoOrganizacion, avalOrganizaciones);
         eventoService.reemplazarResponsables(codigo, responsables, avalResponsables);
@@ -86,6 +83,7 @@ public class EventoController {
     var resp = new HashMap<String, Object>();
     resp.put("organizaciones", eventoService.obtenerOrganizacionesEvento(codigo));
     resp.put("responsables", eventoService.obtenerResponsablesEvento(codigo));
+    resp.put("reservaciones", eventoService.obtenerReservacionesEvento(codigo));
     return ResponseEntity.ok(resp);
     }
 }   

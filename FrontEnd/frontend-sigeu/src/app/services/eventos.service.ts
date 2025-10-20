@@ -25,7 +25,7 @@ export class EventosService {
     return this.http.put(`${this.baseUrl}/editar`, form);
   }
 
-  obtenerDetalles(codigo: number): Observable<{ organizaciones: Array<{ nit: string; representanteAlterno: string; certificadoUrl: string }>, responsables: Array<{ idUsuario: number; documentoAvalUrl: string }> }> {
-    return this.http.get<{ organizaciones: Array<{ nit: string; representanteAlterno: string; certificadoUrl: string }>, responsables: Array<{ idUsuario: number; documentoAvalUrl: string }> }>(`${this.baseUrl}/detalles/${codigo}`);
+  obtenerDetalles(codigo: number): Observable<{ organizaciones: { nit: string; representanteAlterno: string; certificadoUrl: string }[], responsables: { idUsuario: number; documentoAvalUrl: string }[], reservaciones: {codigoEspacio: string; horaInicio: string; horaFin:string}[]}> {
+    return this.http.get<{ organizaciones:{ nit: string; representanteAlterno: string; certificadoUrl: string }[], responsables: { idUsuario: number; documentoAvalUrl: string }[], reservaciones: {codigoEspacio: string; horaInicio: string; horaFin:string}[] }>(`${this.baseUrl}/detalles/${codigo}`);
   }
 }

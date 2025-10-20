@@ -2,6 +2,7 @@ package com.gestion.eventos.Service;
 
 import com.gestion.eventos.DTO.EventoOrganizacionResponse;
 import com.gestion.eventos.DTO.EventoRegistroCompleto;
+import com.gestion.eventos.DTO.EventoReservacionResponse;
 import com.gestion.eventos.DTO.EventoResponsableResponse;
 import com.gestion.eventos.Model.EventoModel;
 import java.util.List;
@@ -18,4 +19,5 @@ public interface IEventoService {
     Optional<EventoModel> buscarPorCodigo(Integer codigo);
     List<EventoOrganizacionResponse> obtenerOrganizacionesEvento(Integer codigo);
     List<EventoResponsableResponse> obtenerResponsablesEvento(Integer codigo);
+    List<EventoReservacionResponse> obtenerReservacionesEvento(Integer codigo);
 }
