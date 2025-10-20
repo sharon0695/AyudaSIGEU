@@ -27,11 +27,6 @@
 
   <!-- ======= CONTENIDO PRINCIPAL ======= -->
   <main class="main-container">
-    <!-- Mensaje de estado -->
-    <div *ngIf="mensaje" class="mensaje-estado" [class.error]="mensaje.includes('Error') || mensaje.includes('No se pudo')">
-      {{ mensaje }}
-    </div>
-    
     <section class="event-container">
       <div class="event-header">
         <h2>Eventos</h2>
@@ -201,6 +196,23 @@
             </div>
           </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ======= MODAL DE MENSAJES ======= -->
+  <div class="message-modal" [style.display]="showMessageModal ? 'flex' : 'none'">
+    <div class="message-modal-content" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+      <div class="message-icon">
+        <span *ngIf="messageType === 'success'" class="material-symbols-outlined">check_circle</span>
+        <span *ngIf="messageType === 'error'" class="material-symbols-outlined">error</span>
+      </div>
+      <div class="message-content">
+        <h3 class="message-title">{{ messageTitle }}</h3>
+        <p class="message-text">{{ messageText }}</p>
+      </div>
+      <button class="message-close-btn" (click)="closeMessageModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
   </div>
 

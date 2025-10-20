@@ -30,6 +30,12 @@ export class Eventos {
   showModal = false;
   editMode = false;
   editCodigo: number | null = null;
+  
+  // Modal de mensajes
+  showMessageModal = false;
+  messageType: 'success' | 'error' = 'success';
+  messageText = '';
+  messageTitle = '';
 
   espaciosListado: Array<{ codigo: string; nombre?: string }> = [];
   organizacionesListado: Array<{ nit: string; nombre?: string }> = [];
@@ -56,7 +62,7 @@ export class Eventos {
   listar() {
     this.eventosService.listar().subscribe({
       next: (data) => (this.eventos = data || []),
-      error: () => (this.mensaje = 'No fue posible cargar eventos'),
+      error: () => this.showMessage('error', 'Error de Carga', 'No fue posible cargar eventos'),
     });
   }
 
@@ -86,49 +92,49 @@ export class Eventos {
   crear() {
     // Validaciones básicas
     if (!this.nuevoEvento.nombre?.trim()) { 
-      this.mensaje = 'El nombre del evento es obligatorio.'; 
+      this.showMessage('error', 'Error de Validación', 'El nombre del evento es obligatorio.'); 
       return; 
     }
     
     if (!this.nuevoEvento.fecha) { 
-      this.mensaje = 'La fecha del evento es obligatoria.'; 
+      this.showMessage('error', 'Error de Validación', 'La fecha del evento es obligatoria.'); 
       return; 
     }
     
     if (!this.nuevoEvento.hora_inicio) { 
-      this.mensaje = 'La hora de inicio es obligatoria.'; 
+      this.showMessage('error', 'Error de Validación', 'La hora de inicio es obligatoria.'); 
       return; 
     }
     
     if (!this.nuevoEvento.hora_fin) { 
-      this.mensaje = 'La hora de fin es obligatoria.'; 
+      this.showMessage('error', 'Error de Validación', 'La hora de fin es obligatoria.'); 
       return; 
     }
     
     if (!this.nuevoEvento.tipo) { 
-      this.mensaje = 'El tipo de evento es obligatorio.'; 
+      this.showMessage('error', 'Error de Validación', 'El tipo de evento es obligatorio.'); 
       return; 
     }
     
     // Validar que la hora de fin sea posterior a la hora de inicio
     if (this.nuevoEvento.hora_inicio >= this.nuevoEvento.hora_fin) {
-      this.mensaje = 'La hora de fin debe ser posterior a la hora de inicio.';
+      this.showMessage('error', 'Error de Validación', 'La hora de fin debe ser posterior a la hora de inicio.');
       return;
     }
     
     if (!this.selectedEspacios.length) { 
-      this.mensaje = 'Selecciona al menos un espacio.'; 
+      this.showMessage('error', 'Error de Validación', 'Selecciona al menos un espacio.'); 
       return; 
     }
 
     if (!this.selectedResponsables.length || this.selectedResponsables.every(r => r.id === 0)) { 
-      this.mensaje = 'Debe haber al menos un responsable.'; 
+      this.showMessage('error', 'Error de Validación', 'Debe haber al menos un responsable.'); 
       return; 
     }
 
     const userId = this.auth.getUserId();
     if (!userId) {
-      this.mensaje = 'Debes iniciar sesión para crear eventos';
+      this.showMessage('error', 'Error de Sesión', 'Debes iniciar sesión para crear eventos');
       return;
     }
 
@@ -174,15 +180,13 @@ export class Eventos {
 
     this.eventosService.registrar(payload).subscribe({
       next: (response) => {
-        this.mensaje = response?.mensaje || 'Evento registrado exitosamente';
+        this.showMessage('success', '¡Éxito!', response?.mensaje || 'Evento registrado exitosamente');
         this.listar();
         this.closeModal();
-        // Ocultar mensaje después de 3 segundos
-        setTimeout(() => this.mensaje = '', 3000);
       },
       error: (err) => {
         console.error('Error al registrar evento:', err);
-        this.mensaje = err?.error?.mensaje || 'No fue posible registrar el evento';
+        this.showMessage('error', 'Error al Registrar', err?.error?.mensaje || 'No fue posible registrar el evento');
       }
     });
   }
@@ -212,14 +216,13 @@ export class Eventos {
       
       this.eventosService.editar(form).subscribe({
         next: () => {
-          this.mensaje = 'Evento actualizado exitosamente';
+          this.showMessage('success', '¡Éxito!', 'Evento actualizado exitosamente');
           this.listar();
           this.closeModal();
-          setTimeout(() => this.mensaje = '', 3000);
         },
         error: (err) => {
           console.error('Error al actualizar evento:', err);
-          this.mensaje = err?.error?.mensaje || 'No fue posible actualizar el evento';
+          this.showMessage('error', 'Error al Actualizar', err?.error?.mensaje || 'No fue posible actualizar el evento');
         }
       });
     } else {
@@ -274,12 +277,26 @@ export class Eventos {
     this.selectedResponsables = [];
   }
 
+  // Métodos para el modal de mensajes
+  showMessage(type: 'success' | 'error', title: string, message: string) {
+    this.messageType = type;
+    this.messageTitle = title;
+    this.messageText = message;
+    this.showMessageModal = true;
+  }
+
+  closeMessageModal() {
+    this.showMessageModal = false;
+    this.messageText = '';
+    this.messageTitle = '';
+  }
+
   addEspacio() { 
     // Verificar que no se agreguen espacios duplicados
     const availableEspacios = this.espaciosListado.filter(e => !this.selectedEspacios.includes(e.codigo));
     
     if (availableEspacios.length === 0) {
-      this.mensaje = 'No hay más espacios disponibles para agregar';
+      this.showMessage('error', 'Sin Espacios Disponibles', 'No hay más espacios disponibles para agregar');
       return;
     }
     
@@ -292,7 +309,7 @@ export class Eventos {
     const availableOrgs = this.organizacionesListado.filter(o => !existingNits.includes(o.nit));
     
     if (availableOrgs.length === 0) {
-      this.mensaje = 'No hay más organizaciones disponibles para agregar';
+      this.showMessage('error', 'Sin Organizaciones Disponibles', 'No hay más organizaciones disponibles para agregar');
       return;
     }
     
@@ -305,7 +322,7 @@ export class Eventos {
     const availableUsers = this.usuariosListado.filter(u => !existingIds.includes(u.identificacion));
     
     if (availableUsers.length === 0) {
-      this.mensaje = 'No hay más usuarios disponibles para agregar como responsables';
+      this.showMessage('error', 'Sin Usuarios Disponibles', 'No hay más usuarios disponibles para agregar como responsables');
       return;
     }
     
@@ -319,11 +336,21 @@ export class Eventos {
   closeOrgInlineModal() { this.showOrgInline = false; }
   onSubmitOrgInline(event: Event) {
     event.preventDefault();
-    const idUsuario = this.auth.getUserId(); if (!idUsuario) { this.mensaje = 'Debes iniciar sesión'; return; }
+    const idUsuario = this.auth.getUserId(); 
+    if (!idUsuario) { 
+      this.showMessage('error', 'Error de Sesión', 'Debes iniciar sesión'); 
+      return; 
+    }
     const body = { ...this.orgInline, usuario: { identificacion: idUsuario } };
     this.organizacionesService.registrar(body).subscribe({
-      next: () => { this.selectedOrganizaciones.push({ nit: this.orgInline.nit, tipo: 'legal', alterno: '', aval: null }); this.showOrgInline = false; },
-      error: (err) => { this.mensaje = err?.error?.mensaje || 'No se pudo crear organización'; }
+      next: () => { 
+        this.selectedOrganizaciones.push({ nit: this.orgInline.nit, tipo: 'legal', alterno: '', aval: null }); 
+        this.showOrgInline = false; 
+        this.showMessage('success', '¡Éxito!', 'Organización creada y agregada al evento');
+      },
+      error: (err) => { 
+        this.showMessage('error', 'Error al Crear Organización', err?.error?.mensaje || 'No se pudo crear organización'); 
+      }
     });
   }
   nuevaOrganizacion() {
@@ -368,19 +395,19 @@ export class Eventos {
   onOrgAvalChange(event: Event, i: number) {
     const file = (event.target as HTMLInputElement).files?.[0] || null;
     if (file && file.type !== 'application/pdf') {
-      this.mensaje = 'El aval de organización debe ser un PDF';
+      this.showMessage('error', 'Formato Incorrecto', 'El aval de organización debe ser un archivo PDF');
       (event.target as HTMLInputElement).value = '';
       return;
     }
     this.selectedOrganizaciones[i].aval = file;
   }
   onRespAvalChange(event: Event, i: number) {
-  const file = (event.target as HTMLInputElement).files?.[0] || null;
-  if (file && file.type !== 'application/pdf') {
-    this.mensaje = 'El aval del responsable debe ser un PDF';
-    (event.target as HTMLInputElement).value = '';
-    return;
+    const file = (event.target as HTMLInputElement).files?.[0] || null;
+    if (file && file.type !== 'application/pdf') {
+      this.showMessage('error', 'Formato Incorrecto', 'El aval del responsable debe ser un archivo PDF');
+      (event.target as HTMLInputElement).value = '';
+      return;
+    }
+    this.selectedResponsables[i].aval = file;
   }
-  this.selectedResponsables[i].aval = file;
-}
 }
