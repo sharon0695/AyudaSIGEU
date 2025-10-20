@@ -27,6 +27,11 @@
 
   <!-- ======= CONTENIDO PRINCIPAL ======= -->
   <main class="main-container">
+    <!-- Mensaje de estado -->
+    <div *ngIf="mensaje" class="mensaje-estado" [class.error]="mensaje.includes('Error') || mensaje.includes('No se pudo')">
+      {{ mensaje }}
+    </div>
+    
     <section class="event-container">
       <div class="event-header">
         <h2>Eventos</h2>
