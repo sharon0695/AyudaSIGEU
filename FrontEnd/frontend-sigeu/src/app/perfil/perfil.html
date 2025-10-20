@@ -27,9 +27,11 @@
 
   <!-- ======= PERFIL ======= -->
   <main class="main-container">
+    <!-- Mensaje de estado -->
+    
     <section class="profile-card">
       <div class="profile-header">
-        <img src="img/perfil.png" alt="Avatar" class="profile-avatar">
+        <img [src]="usuario?.fotoPerfil ? '/api/usuarios/foto/' + usuario.identificacion : 'img/perfil.png'" alt="Avatar" class="profile-avatar">
         <h2>{{ usuario?.nombre }} {{ usuario?.apellido }}</h2>
       </div>
       <div></div>
@@ -60,8 +62,8 @@
         <div class="form-group">
           <label for="new-avatar">Foto de perfil</label>
           <div class="avatar-upload">
-            <img id="preview-avatar" src="img/perfil.png" alt="Vista previa">
-            <input type="file" id="new-avatar" accept="image/*">
+            <img id="preview-avatar" [src]="usuario?.fotoPerfil ? '/api/usuarios/foto/' + usuario.identificacion : 'img/perfil.png'" alt="Vista previa">
+            <input type="file" id="new-avatar" accept="image/jpeg,image/jpg,image/png">
           </div>
         </div>
 
@@ -72,12 +74,12 @@
 
         <div class="form-group">
           <label for="current-password">Contraseña actual</label>
-          <input type="password" id="new-password" placeholder="Ingrese nueva contraseña" [(ngModel)]="edit.contrasena" name="contrasena">
+          <input type="password" id="current-password" placeholder="Ingrese su contraseña actual" [(ngModel)]="edit.contrasenaActual" name="contrasenaActual">
         </div>
 
         <div class="form-group">
           <label for="new-password">Nueva contraseña</label>
-          <input type="password" id="new-password" placeholder="Ingrese nueva contraseña">
+          <input type="password" id="new-password" placeholder="Ingrese nueva contraseña" [(ngModel)]="edit.nuevaContrasena" name="nuevaContrasena">
         </div>
 
         <button type="submit" class="save-btn" (click)="onSaveEdit()">Guardar cambios</button>
@@ -105,7 +107,15 @@
     if (fileInput && preview) {
       fileInput.addEventListener('change', e => {
         const file = e.target.files[0];
-        if (file) preview.src = URL.createObjectURL(file);
+        if (file) {
+          // Validar tipo de archivo
+          if (!file.type.match('image/(jpeg|jpg|png)')) {
+            alert('Solo se permiten archivos JPG y PNG');
+            e.target.value = '';
+            return;
+          }
+          preview.src = URL.createObjectURL(file);
+        }
       });
     }
 
@@ -116,6 +126,23 @@
       }
     };
   </script>
+
+  <!-- ======= MODAL DE MENSAJES ======= -->
+  <div class="message-modal" [style.display]="showMessageModal ? 'flex' : 'none'">
+    <div class="message-modal-content" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+      <div class="message-icon">
+        <span *ngIf="messageType === 'success'" class="material-symbols-outlined">check_circle</span>
+        <span *ngIf="messageType === 'error'" class="material-symbols-outlined">error</span>
+      </div>
+      <div class="message-content">
+        <h3 class="message-title">{{ messageTitle }}</h3>
+        <p class="message-text">{{ messageText }}</p>
+      </div>
+      <button class="message-close-btn" (click)="closeMessageModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  </div>
 
 </body>
 </html>

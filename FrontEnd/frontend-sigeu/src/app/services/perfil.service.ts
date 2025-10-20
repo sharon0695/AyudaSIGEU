@@ -10,11 +10,12 @@ export class PerfilService {
 
   actualizarPerfil(
     identificacion: number,
-    changes: { contrasena?: string; celular?: string; fotoFile?: File }
+    changes: { contrasenaActual?: string; nuevaContrasena?: string; celular?: string; fotoFile?: File }
   ): Observable<any> {
     const form = new FormData();
     form.append('identificacion', String(identificacion));
-    if (changes.contrasena) form.append('contrasena', changes.contrasena);
+    if (changes.contrasenaActual) form.append('contrasenaActual', changes.contrasenaActual);
+    if (changes.nuevaContrasena) form.append('nuevaContrasena', changes.nuevaContrasena);
     if (changes.celular) form.append('celular', changes.celular);
     if (changes.fotoFile) form.append('fotoPerfil', changes.fotoFile);
     return this.http.put(`${this.baseUrl}/editarPerfil`, form);

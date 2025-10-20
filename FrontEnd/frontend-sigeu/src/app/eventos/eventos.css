@@ -77,6 +77,36 @@ header {
   margin-top: 60px;
 }
 
+/* ===== MENSAJE DE ESTADO ===== */
+.mensaje-estado {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  z-index: 1001;
+  background-color: #4caf50;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+.mensaje-estado.error {
+  background-color: #f44336;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .event-container {
   background-color: #f1f1ff;
   border-radius: 10px;
@@ -312,4 +342,122 @@ header {
 .modal-content {
   max-height: 90vh;         /* Evita que se salga de la pantalla */
   overflow-y: auto;         /* Permite hacer scroll si es necesario */
+}
+
+/* ===== MODAL DE MENSAJES ===== */
+.message-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.message-modal-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 0;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  position: relative;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.message-modal-content.success {
+  border-left: 5px solid #4caf50;
+}
+
+.message-modal-content.error {
+  border-left: 5px solid #f44336;
+}
+
+.message-icon {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-icon .material-symbols-outlined {
+  font-size: 48px;
+}
+
+.message-modal-content.success .message-icon .material-symbols-outlined {
+  color: #4caf50;
+}
+
+.message-modal-content.error .message-icon .material-symbols-outlined {
+  color: #f44336;
+}
+
+.message-content {
+  flex: 1;
+  padding: 20px 20px 20px 0;
+}
+
+.message-title {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.message-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.message-close-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.message-close-btn .material-symbols-outlined {
+  font-size: 20px;
+  color: #666;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

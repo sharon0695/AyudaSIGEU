@@ -60,11 +60,12 @@ public class UsuarioController {
     @PutMapping(value = "/editarPerfil", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UsuarioModel> editarPerfil(
             @RequestParam Integer identificacion,
-            @RequestParam(required = false) String contrasena,
+            @RequestParam(required = false) String contrasenaActual,
+            @RequestParam(required = false) String nuevaContrasena,
             @RequestParam(required = false) String celular,
             @RequestParam(required = false) MultipartFile fotoPerfil
     ) throws IOException {
-        UsuarioModel actualizado = usuarioService.actualizarPerfil(identificacion, contrasena, celular, fotoPerfil);
+        UsuarioModel actualizado = usuarioService.actualizarPerfil(identificacion, contrasenaActual, nuevaContrasena, celular, fotoPerfil);
         return ResponseEntity.ok(actualizado);
     }
 

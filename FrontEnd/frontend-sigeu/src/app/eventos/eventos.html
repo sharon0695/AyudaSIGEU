@@ -129,6 +129,7 @@
             <div class="form-group">
               <label>Tipo de evento</label>
               <select [(ngModel)]="nuevoEvento.tipo" name="tipo">
+                <option value="">Seleccione un tipo</option>
                 <option value="Academico">Académico</option>
                 <option value="Ludico">Lúdico</option>
               </select>
@@ -195,6 +196,23 @@
             </div>
           </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ======= MODAL DE MENSAJES ======= -->
+  <div class="message-modal" [style.display]="showMessageModal ? 'flex' : 'none'">
+    <div class="message-modal-content" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+      <div class="message-icon">
+        <span *ngIf="messageType === 'success'" class="material-symbols-outlined">check_circle</span>
+        <span *ngIf="messageType === 'error'" class="material-symbols-outlined">error</span>
+      </div>
+      <div class="message-content">
+        <h3 class="message-title">{{ messageTitle }}</h3>
+        <p class="message-text">{{ messageText }}</p>
+      </div>
+      <button class="message-close-btn" (click)="closeMessageModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
   </div>
 

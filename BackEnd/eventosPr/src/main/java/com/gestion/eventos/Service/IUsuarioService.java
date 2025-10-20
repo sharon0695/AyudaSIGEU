@@ -16,7 +16,7 @@ public interface IUsuarioService {
     LoginResponse login(LoginRequest request);
     List<UsuarioModel> listarUsuario();
     void enviarCredencialesPorCorreo(String correo);
-    UsuarioModel actualizarPerfil(Integer identificacion, String contrasena, String celular, MultipartFile fotoPerfil) throws IOException;
+    UsuarioModel actualizarPerfil(Integer identificacion, String contrasenaActual, String nuevaContrasena, String celular, MultipartFile fotoPerfil) throws IOException;
     ResponseEntity<Resource> obtenerFoto(Integer id) throws IOException;
     void logout(String authHeader);
 }
