@@ -172,13 +172,28 @@ public class UsuarioServiceImp implements IUsuarioService {
         mailSender.send(mensaje);
     }
     @Override
-    public UsuarioModel actualizarPerfil(Integer identificacion, String contrasena, String celular, MultipartFile fotoPerfil) throws IOException {
+    public UsuarioModel actualizarPerfil(Integer identificacion, String contrasenaActual, String nuevaContrasena, String celular, MultipartFile fotoPerfil) throws IOException {
         UsuarioModel usuario = usuarioRepository.findById(identificacion)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Actualizar contraseña
-        if (contrasena != null && !contrasena.trim().isEmpty()) {
-            usuario.setContrasena(contrasena);
+        // Validar y actualizar contraseña
+        if (nuevaContrasena != null && !nuevaContrasena.trim().isEmpty()) {
+            // Verificar que se proporcione la contraseña actual
+            if (contrasenaActual == null || contrasenaActual.trim().isEmpty()) {
+                throw new RuntimeException("Debe proporcionar la contraseña actual para cambiarla");
+            }
+            
+            // Verificar que la contraseña actual sea correcta
+            if (!contrasenaActual.equals(usuario.getContrasena())) {
+                throw new RuntimeException("La contraseña actual no es correcta");
+            }
+            
+            // Validar la nueva contraseña
+            if (!PasswordPolicy.isValid(nuevaContrasena)) {
+                throw new RuntimeException(PasswordPolicy.requirementsMessage());
+            }
+            
+            usuario.setContrasena(nuevaContrasena);
         }
 
         // Validar y actualizar celular (solo números y 10 dígitos)
@@ -192,12 +207,13 @@ public class UsuarioServiceImp implements IUsuarioService {
         // Guardar imagen si viene
         if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
             String contentType = fotoPerfil.getContentType();
-            if (contentType == null || !contentType.equals("image/png")) {
-                throw new RuntimeException("Solo se permiten imágenes PNG");
+            if (contentType == null || (!contentType.equals("image/png") && !contentType.equals("image/jpeg"))) {
+                throw new RuntimeException("Solo se permiten imágenes PNG y JPG");
             }
 
             String directorio = "src/main/resources/static/uploads/perfiles/";
-            String nombreArchivo = usuario.getIdentificacion() + "_" + fotoPerfil.getOriginalFilename();
+            String extension = contentType.equals("image/jpeg") ? ".jpg" : ".png";
+            String nombreArchivo = usuario.getIdentificacion() + "_" + System.currentTimeMillis() + extension;
             Path rutaArchivo = Paths.get(directorio, nombreArchivo);
             Files.createDirectories(rutaArchivo.getParent());
             fotoPerfil.transferTo(rutaArchivo.toFile());

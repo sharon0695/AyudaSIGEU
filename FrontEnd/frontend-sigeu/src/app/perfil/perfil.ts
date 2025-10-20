@@ -16,7 +16,7 @@ export class Perfil {
   mensaje = '';
   usuario: any = null;
   showEdit = false;
-  edit = { celular: '', contrasena: '' };
+  edit = { celular: '', contrasenaActual: '', nuevaContrasena: '' };
 
   constructor(private auth: AuthService, private router: Router, private api: Api, private perfil: PerfilService) {}
 
@@ -27,10 +27,32 @@ export class Perfil {
   private cargarPerfil() {
     const raw = localStorage.getItem('auth_user');
     this.usuario = raw ? JSON.parse(raw) : null;
+    // Actualizar la vista previa de la imagen actual
+    this.actualizarVistaPreviaImagen();
   }
 
-  openEdit() { this.showEdit = true; }
-  closeEdit() { this.showEdit = false; }
+  private actualizarVistaPreviaImagen() {
+    const preview = document.getElementById('preview-avatar') as HTMLImageElement;
+    if (preview && this.usuario?.fotoPerfil) {
+      preview.src = `/api/usuarios/foto/${this.usuario.identificacion}`;
+    } else if (preview) {
+      preview.src = 'img/perfil.png';
+    }
+  }
+
+  openEdit() { 
+    this.showEdit = true; 
+    // Limpiar campos de edición
+    this.edit = { celular: this.usuario?.celular || '', contrasenaActual: '', nuevaContrasena: '' };
+    // Actualizar vista previa de imagen
+    this.actualizarVistaPreviaImagen();
+  }
+  closeEdit() { 
+    this.showEdit = false; 
+    this.mensaje = '';
+    // Limpiar campos de edición
+    this.edit = { celular: '', contrasenaActual: '', nuevaContrasena: '' };
+  }
 
   onLogout() {
     if (!confirm('¿Seguro que quieres cerrar sesión?')) return;
@@ -52,12 +74,29 @@ export class Perfil {
     const fileInput = document.getElementById('new-avatar') as HTMLInputElement | null;
     const foto = fileInput?.files?.[0];  
     this.perfil.actualizarPerfil(this.usuario.identificacion, {
-      contrasena: this.edit.contrasena || undefined,
+      contrasenaActual: this.edit.contrasenaActual || undefined,
+      nuevaContrasena: this.edit.nuevaContrasena || undefined,
       celular: this.edit.celular || undefined,
       fotoFile: foto || undefined,
     }).subscribe({
-      next: () => { this.mensaje = 'Perfil actualizado'; this.closeEdit(); this.cargarPerfil(); },
-      error: (err) => { console.error('Error', err); this.mensaje = err?.error?.mensaje || 'No se pudo actualizar'; }
+      next: (usuarioActualizado) => { 
+        this.mensaje = 'Perfil actualizado correctamente'; 
+        // Actualizar el usuario en localStorage con los datos actualizados
+        if (usuarioActualizado) {
+          localStorage.setItem('auth_user', JSON.stringify(usuarioActualizado));
+          this.usuario = usuarioActualizado;
+        }
+        this.closeEdit(); 
+        this.cargarPerfil();
+        // Limpiar campos de edición
+        this.edit = { celular: '', contrasenaActual: '', nuevaContrasena: '' };
+        // Ocultar mensaje después de 3 segundos
+        setTimeout(() => this.mensaje = '', 3000);
+      },
+      error: (err) => { 
+        console.error('Error', err); 
+        this.mensaje = err?.error?.message || err?.error?.mensaje || 'No se pudo actualizar'; 
+      }
     });
   }
 }
