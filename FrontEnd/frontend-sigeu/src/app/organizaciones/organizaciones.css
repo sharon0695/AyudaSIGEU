@@ -165,17 +165,30 @@ header {
   background-color: rgb(31, 49, 49);
   color:#e3f2f7;
 }
+.small-btne:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, #526a8a, rgb(31, 49, 49));
+}
 
 .small-btned{
   background-color:rgb(6, 151, 161);
   border-color: cadetblue;
   color: #e3f2f7;
 }
+.small-btned:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, #b4c0c2, rgb(6, 151, 161));
+}
 
 .small-btnv{
   background-color: rgb(219, 138, 31);
   border-color: rgb(219, 138, 31);
   color: #e3f2f7;
+}
+.small-btnv:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #e0dbac, rgb(219, 138, 31));
+  border-color: #e0dbac;
 }
 /* ========== MODAL ========== */
 .modal {

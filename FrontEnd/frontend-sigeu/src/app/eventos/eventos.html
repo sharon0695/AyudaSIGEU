@@ -175,6 +175,7 @@
               <button type="button" class="small-btn" (click)="addResponsable()">+ Añadir responsable</button>
             </div>
           </div>
+          <div *ngIf="mensaje" class="mensaje-registro" [ngStyle]="{ color: '#dc2626', margin: '8px 0' }">{{ mensaje }}</div>
           <button type="submit" class="save-btn">Guardar</button>
           <div class="modal" [style.display]="showOrgInline ? 'flex' : 'none'">
             <div class="modal-content">

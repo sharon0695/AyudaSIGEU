@@ -37,7 +37,7 @@
       <div class="profile-info">
         <h3>Información del perfil</h3>
         <p><strong>Correo electrónico:</strong> {{ usuario?.correoInstitucional }}</p>
-        <p><strong>Número de teléfono:</strong> {{ usuario?.celular || '—' }}</p>
+        <p><strong>Número de teléfono:</strong> {{ usuario?.celular }}</p>
         <a href="#" (click)="$event.preventDefault(); openEdit()" class="edit-link">Editar perfil</a>
       </div>
     </section>
@@ -80,7 +80,7 @@
           <input type="password" id="new-password" placeholder="Ingrese nueva contraseña">
         </div>
 
-        <button type="submit" class="save-btn">Guardar cambios</button>
+        <button type="submit" class="save-btn" (click)="onSaveEdit()">Guardar cambios</button>
       </form>
     </div>
   </div>

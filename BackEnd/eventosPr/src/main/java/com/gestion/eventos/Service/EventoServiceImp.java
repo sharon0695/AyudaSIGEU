@@ -1,6 +1,8 @@
 package com.gestion.eventos.Service;
 
+import com.gestion.eventos.DTO.EventoOrganizacionResponse;
 import com.gestion.eventos.DTO.EventoRegistroCompleto;
+import com.gestion.eventos.DTO.EventoResponsableResponse;
 import com.gestion.eventos.Model.ColaboracionModel;
 import com.gestion.eventos.Model.EspacioModel;
 import com.gestion.eventos.Model.EventoModel;
@@ -17,8 +19,10 @@ import com.gestion.eventos.Repository.IResponsableEventoRepository;
 import com.gestion.eventos.Repository.IUsuarioRepository;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -335,5 +339,31 @@ public class EventoServiceImp implements IEventoService {
             r.setDocumentoAval(url);
             responsableEventoRepository.save(r);
         }
+    }
+    @Override
+    public List<EventoOrganizacionResponse> obtenerOrganizacionesEvento(Integer codigo) {
+    var list = colaboracionRepository.findAllByCodigoEvento_Codigo(codigo);
+    var out = new ArrayList<EventoOrganizacionResponse>();
+    for (var c : list) {
+        out.add(new EventoOrganizacionResponse(
+        c.getNit_organizacion() != null ? c.getNit_organizacion().getNit() : null,
+        c.getRepresentante_alterno(),
+        c.getCertificado_participacion()
+        ));
+    }
+    return out;
+    }
+
+    @Override
+    public List<EventoResponsableResponse> obtenerResponsablesEvento(Integer codigo) {
+    var list = responsableEventoRepository.findAllByCodigoEvento_Codigo(codigo);
+    var out = new ArrayList<EventoResponsableResponse>();
+    for (var r : list) {
+        out.add(new EventoResponsableResponse(
+        r.getId_usuario() != null ? r.getId_usuario().getIdentificacion() : null,
+        r.getDocumentoAval()
+        ));
+    }
+    return out;
     }
 }

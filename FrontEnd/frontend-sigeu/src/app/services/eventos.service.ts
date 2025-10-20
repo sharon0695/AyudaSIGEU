@@ -24,4 +24,8 @@ export class EventosService {
   editar(form: FormData): Observable<any> {
     return this.http.put(`${this.baseUrl}/editar`, form);
   }
+
+  obtenerDetalles(codigo: number): Observable<{ organizaciones: Array<{ nit: string; representanteAlterno: string; certificadoUrl: string }>, responsables: Array<{ idUsuario: number; documentoAvalUrl: string }> }> {
+    return this.http.get<{ organizaciones: Array<{ nit: string; representanteAlterno: string; certificadoUrl: string }>, responsables: Array<{ idUsuario: number; documentoAvalUrl: string }> }>(`${this.baseUrl}/detalles/${codigo}`);
+  }
 }

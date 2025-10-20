@@ -86,7 +86,7 @@ export class Organizaciones {
     const idUsuario = this.auth.getUserId();
     if (!idUsuario) { this.mensaje = 'Debes iniciar sesión para eliminar organizaciones'; return; }
     this.orgs.eliminar(org.nit, idUsuario).subscribe({
-      next: () => { this.listar(); this.mensaje = 'Organización eliminada correctamente';},
+      next: () => this.listar(),
       error: (err) => { const msg = err?.error?.mensaje || err?.error || 'No se pudo eliminar la organización'; this.mensaje = msg; }
     });
   }

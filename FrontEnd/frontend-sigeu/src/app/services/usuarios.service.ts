@@ -14,6 +14,7 @@ export interface UsuarioRegistroDto {
   codigoPrograma?: string;
   codigoUnidad?: string;
   idFacultad?: string;
+  celular?: string;
 }
 
 @Injectable({

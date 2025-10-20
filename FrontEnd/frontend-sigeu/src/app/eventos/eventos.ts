@@ -178,7 +178,18 @@ export class Eventos {
       codigo_lugar: e?.codigo_lugar || '',
       nit_organizacion: e?.nit_organizacion || ''
     };
-    this.openModal();
+    if (this.editCodigo != null) {
+      this.eventosService.obtenerDetalles(this.editCodigo).subscribe({
+        next: (det) => {
+          this.selectedOrganizaciones = (det.organizaciones || []).map(o => ({ nit: o.nit, tipo: o.representanteAlterno ? 'alterno' : 'legal', alterno: o.representanteAlterno || '', aval: null }));
+          this.selectedResponsables = (det.responsables || []).map(r => ({ id: r.idUsuario, aval: null }));
+          this.openModal();
+        },
+        error: () => { this.openModal(); }
+        });
+      } else {
+      this.openModal();
+    }
   }
   onOrgTipoChange(i: number) {
     if (this.selectedOrganizaciones[i].tipo !== 'alterno') {
