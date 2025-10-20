@@ -1,8 +1,7 @@
 package com.gestion.eventos.Service;
 
-import java.util.List;
-
 import com.gestion.eventos.Model.EspacioModel;
+import java.util.List;
 
 public interface IEspacioService {
     EspacioModel guardarEspacio(EspacioModel espacio);

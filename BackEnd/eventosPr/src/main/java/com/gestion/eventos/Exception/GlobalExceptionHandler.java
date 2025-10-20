@@ -1,13 +1,12 @@
 package com.gestion.eventos.Exception;
 
 import com.gestion.eventos.DTO.MensajeResponse;
+import java.util.NoSuchElementException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

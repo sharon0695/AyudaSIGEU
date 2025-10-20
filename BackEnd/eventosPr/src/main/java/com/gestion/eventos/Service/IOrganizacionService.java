@@ -1,9 +1,8 @@
 package com.gestion.eventos.Service;
 
+import com.gestion.eventos.Model.OrganizacionModel;
 import java.util.List;
 import java.util.Optional;
-
-import com.gestion.eventos.Model.OrganizacionModel;
 
 public interface IOrganizacionService {
     OrganizacionModel guardarOrganizacion(OrganizacionModel organizacion);

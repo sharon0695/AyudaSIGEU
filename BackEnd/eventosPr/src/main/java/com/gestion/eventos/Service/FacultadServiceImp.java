@@ -1,12 +1,10 @@
 package com.gestion.eventos.Service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.gestion.eventos.Model.FacultadModel;
 import com.gestion.eventos.Repository.IFacultadRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 @Service
 public class FacultadServiceImp implements IFacultadService{
     @Autowired IFacultadRepository facultadRepository;

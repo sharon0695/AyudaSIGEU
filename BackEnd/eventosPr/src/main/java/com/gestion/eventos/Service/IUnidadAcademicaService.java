@@ -1,8 +1,7 @@
 package com.gestion.eventos.Service;
 
-import java.util.List;
-
 import com.gestion.eventos.Model.UnidadAcademicaModel;
+import java.util.List;
 
 public interface IUnidadAcademicaService {
     UnidadAcademicaModel guardarUniAcad(UnidadAcademicaModel uniAcad);
