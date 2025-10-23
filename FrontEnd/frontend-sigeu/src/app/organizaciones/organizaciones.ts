@@ -31,6 +31,9 @@ export class Organizaciones {
   messageType: 'success' | 'error' = 'success';
   messageText = '';
   messageTitle = '';
+  editMode: boolean = false;
+  originalNit: string | null = null;
+
 
   constructor(private orgs: OrganizacionesService, private auth: AuthService) {}
   showModal = false;
@@ -76,7 +79,7 @@ export class Organizaciones {
     }
     const existe = this.organizaciones.find(o => o.nit === this.newOrg.nit);
     if (existe) {
-      this.orgs.editar(this.newOrg.nit, idUsuario, this.newOrg).subscribe({
+      this.orgs.editar(this.originalNit!, idUsuario, this.newOrg).subscribe({
         next: () => { 
           this.showMessage('success', '¡Éxito!', 'Organización actualizada correctamente'); 
           this.listar(); 
@@ -145,7 +148,17 @@ export class Organizaciones {
   }
 
   onVisualizar(org: any) { this.viewOrg = { ...org }; this.showViewModal = true; }
-  closeViewModal() { this.showViewModal = false; this.viewOrg = null; }
+  closeViewModal() { this.showViewModal = false; this.viewOrg = null; this.editMode = false; this.originalNit = null;
+    this.newOrg = {
+      nit: '',
+      nombre: '',
+      representante_legal: '',
+      ubicacion: '',
+      telefono: '',
+      sector_economico: '',
+      actividad_principal: ''
+    };
+  }
 
   onEditar(org: any) {
   const idUsuario = this.auth.getUserId();
@@ -157,15 +170,9 @@ export class Organizaciones {
     this.showMessage('error', 'Sin Permisos', 'No tienes permisos para editar esta organización');
     return;
   }
-  this.newOrg = {
-    nit: org.nit || '',
-    nombre: org.nombre || '',
-    representante_legal: org.representante_legal || '',
-    ubicacion: org.ubicacion || '',
-    telefono: org.telefono || '',
-    sector_economico: org.sector_economico || '',
-    actividad_principal: org.actividad_principal || ''
-  };
+  this.newOrg = JSON.parse(JSON.stringify(org));  
+  this.editMode = true;
+  this.originalNit = org.nit;
   this.showModal = true;
 }
 }

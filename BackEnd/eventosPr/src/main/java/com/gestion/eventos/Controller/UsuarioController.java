@@ -43,7 +43,7 @@ public class UsuarioController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         usuarioService.logout(authHeader);
-        return ResponseEntity.noContent().build(); // 204 sin contenido
+        return ResponseEntity.noContent().build();
     }
     
     @GetMapping ("/listar")

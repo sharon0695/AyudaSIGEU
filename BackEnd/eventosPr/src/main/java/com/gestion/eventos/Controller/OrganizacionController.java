@@ -2,7 +2,9 @@ package com.gestion.eventos.Controller;
 
 import com.gestion.eventos.Model.OrganizacionModel;
 import com.gestion.eventos.Service.IOrganizacionService;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,11 +52,14 @@ public class OrganizacionController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     @DeleteMapping("/eliminar/{nit}")
-    public ResponseEntity<String> eliminarOrganizacion(
+    public ResponseEntity<Map<String, String>> eliminarOrganizacion(
         @PathVariable String nit,
         @RequestParam Integer solicitanteId
     ) {
         organizacionService.eliminarOrganizacion(nit, solicitanteId);
-        return ResponseEntity.ok("Organización eliminada correctamente");
+        Map<String, String> response = new HashMap<>();
+        response.put("mensaje", "Organización eliminada correctamente");
+
+        return ResponseEntity.ok(response);
     }
 }

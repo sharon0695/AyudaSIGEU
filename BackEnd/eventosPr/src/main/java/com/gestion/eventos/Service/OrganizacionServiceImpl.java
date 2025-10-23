@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,7 +51,7 @@ public class OrganizacionServiceImpl implements IOrganizacionService {
         if (organizacionExistente.getUsuario() == null ||
             !organizacionExistente.getUsuario().getIdentificacion().equals(idUsuarioEditor)) {
             throw new RuntimeException("No tiene permisos para editar esta organización");
-        }
+        }   
 
         if (organizacionActualizada.getNombre() != null) {
             organizacionExistente.setNombre(organizacionActualizada.getNombre());
@@ -65,7 +64,7 @@ public class OrganizacionServiceImpl implements IOrganizacionService {
         }
         if (organizacionActualizada.getTelefono() != null) {
             if (!organizacionActualizada.getTelefono().matches("\\d+")) {
-                throw new IllegalArgumentException("El teléfono solo debe contener números");
+                throw new RuntimeException("El teléfono solo debe contener números");
             }
             organizacionExistente.setTelefono(organizacionActualizada.getTelefono());
         }
@@ -114,7 +113,7 @@ public class OrganizacionServiceImpl implements IOrganizacionService {
         long asociados = colaboracionRepository.countByNitOrganizacion_Nit(nit);
 
         if (asociados > 0) {
-            throw new DataIntegrityViolationException("La organización no puede eliminarse porque está asociada a eventos");
+            throw new RuntimeException("La organización no puede eliminarse porque está asociada a eventos");
         }
         organizacionRepository.delete(org);
     }
