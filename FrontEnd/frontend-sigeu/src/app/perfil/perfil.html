@@ -25,12 +25,14 @@
     </nav>
   </header>
 
-  <!-- ======= PERFIL ======= -->
-  <main class="main-container">
-    <!-- Mensaje de estado -->
+  <!-- Mensaje de estado -->
     <div *ngIf="mensaje" class="mensaje-estado" [class.error]="mensaje.includes('Error') || mensaje.includes('No se pudo')">
       {{ mensaje }}
     </div>
+
+  <!-- ======= PERFIL ======= -->
+  <main class="main-container">
+    
 
     <section class="profile-card">
       <div class="profile-header">

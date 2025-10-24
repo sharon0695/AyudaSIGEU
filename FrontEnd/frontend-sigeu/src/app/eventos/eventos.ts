@@ -62,7 +62,7 @@ export class Eventos {
   listar() {
     this.eventosService.listar().subscribe({
       next: (data) => (this.eventos = data || []),
-       error: () => this.showMessage('error', 'Error de Carga', 'No fue posible cargar eventos'),
+      error: () => this.showMessage('error', 'Error de Carga', 'No fue posible cargar eventos'),
     });
   }
 
@@ -89,47 +89,83 @@ export class Eventos {
     });
   }
 
-  crear() {
-    // Validaciones básicas
-    if (!this.nuevoEvento.nombre?.trim()) { 
-      this.showMessage('error', 'Error de Validación', 'El nombre del evento es obligatorio.'); 
-      return; 
+  private validarFormulario(): string | null {
+    // Validación de campos básicos
+    if (!this.nuevoEvento.nombre?.trim()) {
+      return 'El nombre del evento es obligatorio';
     }
     
-    if (!this.nuevoEvento.fecha) { 
-      this.showMessage('error', 'Error de Validación', 'La fecha del evento es obligatoria.'); 
-      return; 
+    if (!this.nuevoEvento.fecha) {
+      return 'La fecha del evento es obligatoria';
     }
     
-    if (!this.nuevoEvento.hora_inicio) { 
-      this.showMessage('error', 'Error de Validación', 'La hora de inicio es obligatoria.'); 
-      return; 
+    if (!this.nuevoEvento.hora_inicio) {
+      return 'La hora de inicio es obligatoria';
     }
     
-    if (!this.nuevoEvento.hora_fin) { 
-      this.showMessage('error', 'Error de Validación', 'La hora de fin es obligatoria.'); 
-      return; 
+    if (!this.nuevoEvento.hora_fin) {
+      return 'La hora de fin es obligatoria';
     }
     
-    if (!this.nuevoEvento.tipo) { 
-      this.showMessage('error', 'Error de Validación', 'El tipo de evento es obligatorio.'); 
-      return; 
-    }
-    
-    // Validar que la hora de fin sea posterior a la hora de inicio
-    if (this.nuevoEvento.hora_inicio >= this.nuevoEvento.hora_fin) {
-      this.showMessage('error', 'Error de Validación', 'La hora de fin debe ser posterior a la hora de inicio.');
-      return;
-    }
-    
-    if (!this.selectedEspacios.length) { 
-      this.showMessage('error', 'Error de Validación', 'Selecciona al menos un espacio.'); 
-      return; 
+    if (!this.nuevoEvento.tipo) {
+      return 'El tipo de evento es obligatorio';
     }
 
-    if (!this.selectedResponsables.length || this.selectedResponsables.every(r => r.id === 0)) { 
-      this.showMessage('error', 'Error de Validación', 'Debe haber al menos un responsable.'); 
-      return; 
+    // Validar fecha no sea anterior a hoy
+    const fechaEvento = new Date(this.nuevoEvento.fecha + 'T00:00:00');
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    if (fechaEvento < hoy) {
+      return 'La fecha del evento debe ser igual o posterior a la fecha actual';
+    }
+
+    // Validar horas
+    const horaInicio = this.nuevoEvento.hora_inicio;
+    const horaFin = this.nuevoEvento.hora_fin;
+
+    if (horaInicio === horaFin) {
+      return 'La hora de inicio y la hora de fin no pueden ser iguales';
+    }
+
+    if (horaInicio >= horaFin) {
+      return 'La hora de fin debe ser posterior a la hora de inicio';
+    }
+
+    // Validar espacios
+    if (!this.selectedEspacios.length || this.selectedEspacios.every(e => !e)) {
+      return 'Debe seleccionar al menos un espacio';
+    }
+
+    // Validar responsables
+    if (!this.selectedResponsables.length || this.selectedResponsables.every(r => r.id === 0)) {
+      return 'Debe haber al menos un responsable';
+    }
+
+    // Validar archivos PDF
+    for (let i = 0; i < this.selectedOrganizaciones.length; i++) {
+      const org = this.selectedOrganizaciones[i];
+      if (org.aval && org.aval.type !== 'application/pdf') {
+        return `El aval de la organización ${i + 1} debe ser un archivo PDF`;
+      }
+    }
+
+    for (let i = 0; i < this.selectedResponsables.length; i++) {
+      const resp = this.selectedResponsables[i];
+      if (resp.aval && resp.aval.type !== 'application/pdf') {
+        return `El aval del responsable ${i + 1} debe ser un archivo PDF`;
+      }
+    }
+
+    return null;
+  }
+
+  crear() {
+    // Validar formulario
+    const errorValidacion = this.validarFormulario();
+    if (errorValidacion) {
+      this.showMessage('error', 'Error de Validación', errorValidacion);
+      return;
     }
 
     const userId = this.auth.getUserId();
@@ -152,8 +188,8 @@ export class Eventos {
       .filter(resp => resp.id > 0)
       .map(resp => ({
         id_usuario: resp.id,
-        tipoAval: 'documento_aval',
         documentoAval: resp.aval ? resp.aval.name : undefined
+        // NO enviar tipoAval si no es necesario
       }));
 
     // Construir reservaciones
@@ -161,17 +197,17 @@ export class Eventos {
       .filter(espacio => espacio)
       .map(espacio => ({
         codigo_espacio: espacio,
-        hora_inicio: this.nuevoEvento.hora_inicio,
-        hora_fin: this.nuevoEvento.hora_fin
+        hora_inicio: this.nuevoEvento.hora_inicio + ':00', // Añadir segundos
+        hora_fin: this.nuevoEvento.hora_fin + ':00' // Añadir segundos
       }));
 
     const payload: EventoRegistroCompleto = {
       nombre: this.nuevoEvento.nombre,
       descripcion: this.nuevoEvento.descripcion || '',
       tipo: this.nuevoEvento.tipo || 'Academico',
-      fecha: this.nuevoEvento.fecha,
-      hora_inicio: this.nuevoEvento.hora_inicio,
-      hora_fin: this.nuevoEvento.hora_fin,
+      fecha: this.nuevoEvento.fecha, // Formato: "YYYY-MM-DD"
+      hora_inicio: this.nuevoEvento.hora_inicio + ':00', // Añadir segundos: "HH:mm:ss"
+      hora_fin: this.nuevoEvento.hora_fin + ':00', // Añadir segundos: "HH:mm:ss"
       id_usuario_registra: userId,
       organizaciones,
       responsables,
@@ -180,20 +216,29 @@ export class Eventos {
 
     this.eventosService.registrar(payload).subscribe({
       next: (response) => {
-        this.showMessage('success', '¡Éxito!', response?.mensaje || 'Evento registrado exitosamente');
+        this.showMessage('success', '¡Registro Exitoso!', response?.mensaje || 'El evento ha sido registrado exitosamente');
         this.listar();
         this.closeModal();
       },
       error: (err) => {
         console.error('Error al registrar evento:', err);
-        this.showMessage('error', 'Error al Registrar', err?.error?.mensaje || 'No fue posible registrar el evento');
+        const mensajeError = err?.error?.mensaje || err?.error?.message || 'No fue posible registrar el evento';
+        this.showMessage('error', 'Error al Registrar', mensajeError);
       }
     });
   }
 
   onSubmitCrearEvento(event: Event) {
     event.preventDefault();
+    
     if (this.editMode && this.editCodigo != null) {
+      // Validar formulario antes de editar
+      const errorValidacion = this.validarFormulario();
+      if (errorValidacion) {
+        this.showMessage('error', 'Error de Validación', errorValidacion);
+        return;
+      }
+
       const form = new FormData();
       form.append('codigo', String(this.editCodigo));
       form.append('nombre', this.nuevoEvento.nombre || '');
@@ -216,13 +261,14 @@ export class Eventos {
       
       this.eventosService.editar(form).subscribe({
         next: () => {
-          this.showMessage('success', '¡Éxito!', 'Evento actualizado exitosamente');
+          this.showMessage('success', '¡Actualización Exitosa!', 'El evento ha sido actualizado exitosamente');
           this.listar();
           this.closeModal();
         },
         error: (err) => {
           console.error('Error al actualizar evento:', err);
-          this.showMessage('error', 'Error al Actualizar', err?.error?.mensaje || 'No fue posible actualizar el evento');
+          const mensajeError = err?.error?.mensaje || err?.error?.message || 'No fue posible actualizar el evento';
+          this.showMessage('error', 'Error al Actualizar', mensajeError);
         }
       });
     } else {
@@ -256,6 +302,7 @@ export class Eventos {
       }
     }
   }
+
   closeModal() { 
     this.showModal = false; 
     this.editMode = false; 
@@ -283,6 +330,11 @@ export class Eventos {
     this.messageTitle = title;
     this.messageText = message;
     this.showMessageModal = true;
+    
+    // Auto cerrar después de 5 segundos
+    setTimeout(() => {
+      this.closeMessageModal();
+    }, 5000);
   }
 
   closeMessageModal() {
@@ -292,7 +344,6 @@ export class Eventos {
   }
 
   addEspacio() { 
-    // Verificar que no se agreguen espacios duplicados
     const availableEspacios = this.espaciosListado.filter(e => !this.selectedEspacios.includes(e.codigo));
     
     if (availableEspacios.length === 0) {
@@ -302,10 +353,13 @@ export class Eventos {
     
     this.selectedEspacios.push(''); 
   }
-  removeEspacio(i: number) { this.selectedEspacios.splice(i, 1); }
+
+  removeEspacio(i: number) { 
+    this.selectedEspacios.splice(i, 1); 
+  }
+
   addOrganizacion() { 
-    // Verificar que no se agreguen organizaciones duplicadas
-    const existingNits = this.selectedOrganizaciones.map(o => o.nit);
+    const existingNits = this.selectedOrganizaciones.map(o => o.nit).filter(n => n);
     const availableOrgs = this.organizacionesListado.filter(o => !existingNits.includes(o.nit));
     
     if (availableOrgs.length === 0) {
@@ -315,10 +369,13 @@ export class Eventos {
     
     this.selectedOrganizaciones.push({ nit: '', tipo: 'legal', alterno: '', aval: null }); 
   }
-  removeOrganizacion(i: number) { this.selectedOrganizaciones.splice(i, 1); }
+
+  removeOrganizacion(i: number) { 
+    this.selectedOrganizaciones.splice(i, 1); 
+  }
+
   addResponsable() { 
-    // Verificar que no se agreguen responsables duplicados
-    const existingIds = this.selectedResponsables.map(r => r.id);
+    const existingIds = this.selectedResponsables.map(r => r.id).filter(id => id > 0);
     const availableUsers = this.usuariosListado.filter(u => !existingIds.includes(u.identificacion));
     
     if (availableUsers.length === 0) {
@@ -328,12 +385,23 @@ export class Eventos {
     
     this.selectedResponsables.push({ id: 0, aval: null }); 
   }
-  removeResponsable(i: number) { this.selectedResponsables.splice(i, 1); }
+
+  removeResponsable(i: number) { 
+    this.selectedResponsables.splice(i, 1); 
+  }
 
   showOrgInline = false;
   orgInline: any = { nit: '', nombre: '', representante_legal: '', telefono: '', ubicacion: '', sector_economico: '', actividad_principal: '' };
-  openOrgInlineModal() { this.orgInline = {}; this.showOrgInline = true; }
-  closeOrgInlineModal() { this.showOrgInline = false; }
+
+  openOrgInlineModal() { 
+    this.orgInline = {}; 
+    this.showOrgInline = true; 
+  }
+
+  closeOrgInlineModal() { 
+    this.showOrgInline = false; 
+  }
+
   onSubmitOrgInline(event: Event) {
     event.preventDefault();
     const idUsuario = this.auth.getUserId(); 
@@ -347,12 +415,15 @@ export class Eventos {
         this.selectedOrganizaciones.push({ nit: this.orgInline.nit, tipo: 'legal', alterno: '', aval: null }); 
         this.showOrgInline = false; 
         this.showMessage('success', '¡Éxito!', 'Organización creada y agregada al evento');
+        this.cargarListas(); // Recargar lista de organizaciones
       },
       error: (err) => { 
-        this.showMessage('error', 'Error al Crear Organización', err?.error?.mensaje || 'No se pudo crear organización'); 
+        const mensajeError = err?.error?.mensaje || err?.error?.message || 'No se pudo crear organización';
+        this.showMessage('error', 'Error al Crear Organización', mensajeError); 
       }
     });
   }
+
   nuevaOrganizacion() {
     this.router.navigate(['/organizaciones'], { queryParams: { nuevo: '1' } });
   }
@@ -376,7 +447,12 @@ export class Eventos {
     if (this.editCodigo != null) {
       this.eventosService.obtenerDetalles(this.editCodigo).subscribe({
         next: (det) => {
-          this.selectedOrganizaciones = (det.organizaciones || []).map(o => ({ nit: o.nit, tipo: o.representanteAlterno ? 'alterno' : 'legal', alterno: o.representanteAlterno || '', aval: null }));
+          this.selectedOrganizaciones = (det.organizaciones || []).map(o => ({ 
+            nit: o.nit, 
+            tipo: o.representanteAlterno ? 'alterno' : 'legal', 
+            alterno: o.representanteAlterno || '', 
+            aval: null 
+          }));
           this.selectedResponsables = (det.responsables || []).map(r => ({ id: r.idUsuario, aval: null }));
           this.selectedEspacios = (det.reservaciones || []).map((rv: any) => rv.codigoEspacio).filter(Boolean);
           this.openModal();
@@ -387,11 +463,13 @@ export class Eventos {
       this.openModal();
     }
   }
+
   onOrgTipoChange(i: number) {
     if (this.selectedOrganizaciones[i].tipo !== 'alterno') {
       this.selectedOrganizaciones[i].alterno = '';
     }
   }
+
   onOrgAvalChange(event: Event, i: number) {
     const file = (event.target as HTMLInputElement).files?.[0] || null;
     if (file && file.type !== 'application/pdf') {
@@ -401,6 +479,7 @@ export class Eventos {
     }
     this.selectedOrganizaciones[i].aval = file;
   }
+
   onRespAvalChange(event: Event, i: number) {
     const file = (event.target as HTMLInputElement).files?.[0] || null;
     if (file && file.type !== 'application/pdf') {

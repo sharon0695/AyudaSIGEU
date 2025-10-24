@@ -100,7 +100,14 @@ public class UsuarioServiceImp implements IUsuarioService {
             throw new IllegalArgumentException("El código ya se encuentra en uso");
         }
         usuarioRepository.save(usuario);
-        return new MensajeResponse("Usuario creado con éxito"); 
+        
+        SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setTo(usuario.getCorreoInstitucional());
+        mensaje.setSubject("Nuevo registro de cuenta");
+        mensaje.setText("Hola " + usuario.getNombre() + 
+                        ",\n\nHas creado una cuenta en el Sistema de Gestión de Eventos Universitarios y este es tu correo registrado");
+        return new MensajeResponse("Usuario creado con éxito");         
+
 }
  
 

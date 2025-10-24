@@ -15,7 +15,7 @@ export class PerfilService {
     const form = new FormData();
     form.append('identificacion', String(identificacion));
     if (changes.contrasenaActual) form.append('contrasenaActual', changes.contrasenaActual);
-    if (changes.nuevaContrasena) form.append('nuevaContrasena', changes.nuevaContrasena);
+    if (changes.nuevaContrasena) form.append('contrasenaNueva', changes.nuevaContrasena);
     if (changes.celular) form.append('celular', changes.celular);
     if (changes.fotoFile) form.append('fotoPerfil', changes.fotoFile);
     return this.http.put(`${this.baseUrl}/editarPerfil`, form);

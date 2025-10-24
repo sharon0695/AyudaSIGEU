@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { Api } from '../services/usuarios.service'; 
 import { PerfilService } from '../services/perfil.service';
 
 @Component({
   selector: 'app-perfil',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css'
 })
@@ -66,33 +66,43 @@ export class Perfil {
   }
 
   onSaveEdit() {
-    if (!this.usuario?.identificacion) { this.mensaje = 'No hay usuario cargado'; return; }
-    const fileInput = document.getElementById('new-avatar') as HTMLInputElement | null;
-    const foto = fileInput?.files?.[0];  
-    this.perfil.actualizarPerfil(this.usuario.identificacion, {
-      contrasenaActual: this.edit.contrasenaActual || undefined,
-      nuevaContrasena: this.edit.nuevaContrasena || undefined,
-      celular: this.edit.celular || undefined,
-      fotoFile: foto || undefined,
-    }).subscribe({
-      next: (usuarioActualizado) => { 
-        this.mensaje = 'Perfil actualizado correctamente'; 
-        // Actualizar el usuario en localStorage con los datos actualizados
-        if (usuarioActualizado) {
-          localStorage.setItem('auth_user', JSON.stringify(usuarioActualizado));
-          this.usuario = usuarioActualizado;
-        }
-        this.closeEdit(); 
-        this.cargarPerfil();
-        // Limpiar campos de edición
-        this.edit = { celular: '', contrasenaActual: '', nuevaContrasena: '' };
-        // Ocultar mensaje después de 3 segundos
-        setTimeout(() => this.mensaje = '', 3000);
-      },
-      error: (err) => { 
-        console.error('Error', err); 
-        this.mensaje = err?.error?.message || err?.error?.mensaje || 'No se pudo actualizar'; 
-      }
-    });
+  if (!this.usuario?.identificacion) { 
+    this.mensaje = 'No hay usuario cargado'; 
+    return; 
   }
+
+  const fileInput = document.getElementById('new-avatar') as HTMLInputElement | null;
+  const foto = fileInput?.files?.[0];
+
+  this.perfil.actualizarPerfil(this.usuario.identificacion, {
+    contrasenaActual: this.edit.contrasenaActual || undefined,
+    nuevaContrasena: this.edit.nuevaContrasena || undefined,
+    celular: this.edit.celular || undefined,
+    fotoFile: foto || undefined,
+  }).subscribe({
+    next: (usuarioActualizado) => {
+      // Mostrar mensaje de éxito con la misma animación visual
+      this.mensaje = 'Perfil actualizado correctamente';
+
+      // Actualizar datos en localStorage y en el perfil
+      if (usuarioActualizado) {
+        localStorage.setItem('auth_user', JSON.stringify(usuarioActualizado));
+        this.usuario = usuarioActualizado;
+      }
+
+      this.closeEdit();
+      this.cargarPerfil();
+      this.edit = { celular: '', contrasenaActual: '', nuevaContrasena: '' };
+
+      // Ocultar el mensaje automáticamente después de 3 segundos
+      setTimeout(() => this.mensaje = '', 3000);
+    },
+    error: (err) => {
+      // Mostrar mensaje de error usando la misma clase CSS (roja)
+      this.mensaje = err?.error?.message || err?.error?.mensaje || 'Error al actualizar el perfil';
+      setTimeout(() => this.mensaje = '', 3000);
+    }
+  });
+}
+
 }

@@ -20,4 +20,6 @@ public interface IEventoService {
     List<EventoOrganizacionResponse> obtenerOrganizacionesEvento(Integer codigo);
     List<EventoResponsableResponse> obtenerResponsablesEvento(Integer codigo);
     List<EventoReservacionResponse> obtenerReservacionesEvento(Integer codigo);
+    void eliminarEvento(Integer codigo);
+    void reemplazarReservaciones(Integer codigo, List<String> espacios, String horaInicio, String horaFin);
 }
